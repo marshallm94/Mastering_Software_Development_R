@@ -161,3 +161,14 @@ scraped from some webpage. Data that is scraped from the web will usually come
 in the form of JSON, XML or HTML and is usually parsed into a list in R (due
 to the flexibility of that class). `jsonlite` and `xml2` are two example packages
 for this process.
+
+The logical operator "or" is expressed with a single pipe `|` or a double pipe
+`||` (for the non-vectorized version). The logical operator "and" is expressed
+with `&` or the double ampersand `&&` (for the non-vectorized version). Check
+[this stack overflow post][https://stackoverflow.com/questions/6558921/boolean-operators-and]
+on when to use which. **All AND operators are evaluated before OR operators**.
+R has the function `xor()` for the exclusive OR operator.
+
+**R uses one-based indexing (as opposed to zero-based indexing like Python)**
+
+
