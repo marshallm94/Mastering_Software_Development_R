@@ -116,9 +116,6 @@ The [tidyverse](https://www.tidyverse.org/) is composed of multiple
 * dplyr - A package of (fast) functions that assist in working with data frames
 (data that is already "tidy")
 
-**The `%>%` operator is a hallmark of the tidyverse and is used to chain actions
-together (analogous to the '|' pipe in Linux/Unix systems).**
-
 ## readr
 
 `read_csv()` is the defacto function for reading tabular data. Generaly, you
@@ -170,5 +167,29 @@ on when to use which. **All AND operators are evaluated before OR operators**.
 R has the function `xor()` for the exclusive OR operator.
 
 **R uses one-based indexing (as opposed to zero-based indexing like Python)**
+
+## dplyr/tidyr
+
+**The `%>%` operator is a hallmark of the tidyverse and is used to chain actions
+together (analogous to the '|' pipe in Linux/Unix systems).** The operator passes
+the output of the function before it as the first argument to the function on the
+after it.
+
+The `summarize()` function is one of the main functions that can be used for
+EDA and is used in the following manner:
+
+```R
+<data_object> %>%
+  summarize(n_obs = n(),
+            <output_attribute_name1> = max(<input_variable>),
+            <output_attribute_name2> = min(<input_variable>))
+            
+# A tibble: 1 × 3
+  n_obs <output_variable_name1> <output_variable_name2> 
+  <int>				<int>				<int>
+1 11824      		  160          		    0
+
+```
+
 
 
