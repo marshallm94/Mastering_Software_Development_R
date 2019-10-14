@@ -186,8 +186,8 @@ EDA and is used in the following manner:
             
 # A tibble: 1 × 3
   n_obs <output_variable_name1> <output_variable_name2> 
-  <int>				<int>				<int>
-1 11824      		  160          		    0
+  <int>	         <int>                  <int>
+1 11824           160                    0
 
 ```
 
