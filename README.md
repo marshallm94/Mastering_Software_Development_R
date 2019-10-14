@@ -254,8 +254,29 @@ to the desired time zone.
 
 More info can be found by downloading the PDF [here](https://www.jstatsoft.org/article/view/v040i03).
 
+Use the `object.size(<object_name>)` function to see how much memory an object
+is using.
+
+Using the `summary(<data_frame>)` function shows the distribution of data for
+each attribute in the `<data_frame>`.
+
+**If you installed R/RStudio using Anaconda, downloading packages from CRAN
+can prove troublesome. If that doesn't work, try `conda search -f r-<package_name>`
+to see if Anaconda has that package. If it does, install using
+`conda install -c r r-<package_name>`.
+
+
 ## Plotting with ggplot
 
 `ggmap` can be used to get the layout of a certain geographical area.
+
+
+
+
+
+
+
+
+
 
 
