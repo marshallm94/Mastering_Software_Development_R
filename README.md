@@ -227,3 +227,35 @@ functions) is by default the dataframe created by the code right before the pipe
 **When you merge data frames as a step in piped code, therefore, the “left” data
 frame is the one piped into the function while the “right” data frame is the
 one stated in the `*_join()` function call."**
+
+The `unite()` function can be used (unsurprisingly) combine multiple columns
+into one column.
+
+## Dates & Times with lubridate
+
+The `lubridate` package (also a part of the tidyverse) is the de facto package
+for working with dates and times. There are various functions that can convert
+character objects into the POSIXlt and POSIXct datetime classes such as
+`ymd_hm(), ymd_hms()` etc. Converting date attribute to the appropriate class
+is worthwile in that it allows other functions to easily pull various 'components'
+out of the the object. Some example functions are:
+
+* `year(<datetime_variable>)`
+* `months(<datetime_variable>)`
+* `mday(<datetime_variable>)`
+* `wday(<datetime_variable>)`
+* `weekdays(<datetime_variable>)`
+* `hour(<datetime_variable>)`
+* `minute(<datetime_variable>)`
+* `second(<datetime_variable>)`
+
+The `with_tz()` can be used to work with timezones. It takes a time from UTC
+to the desired time zone.
+
+More info can be found by downloading the PDF [here](https://www.jstatsoft.org/article/view/v040i03).
+
+## Plotting with ggplot
+
+`ggmap` can be used to get the layout of a certain geographical area.
+
+
