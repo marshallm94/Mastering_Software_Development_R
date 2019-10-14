@@ -183,13 +183,47 @@ EDA and is used in the following manner:
   summarize(n_obs = n(),
             <output_attribute_name1> = max(<input_variable>),
             <output_attribute_name2> = min(<input_variable>))
-            
-# A tibble: 1 × 3
-  n_obs <output_variable_name1> <output_variable_name2> 
-  <int>	         <int>                  <int>
-1 11824           160                    0
-
 ```
 
+You can use the `group_by()` prior to using the `summarize()` function to get
+summary statistics based on some stratification of the data:
 
 
+```R
+<data_object> %>%
+  group_by(<factor_variable>) %>%
+  summarize(n_obs = n(),
+            <output_attribute_name1> = max(<input_variable>),
+            <output_attribute_name2> = min(<input_variable>))
+```
+
+`select()` can be used to select a subset of the columns while `filter()` can
+be used to create subset of the observations. `filter()` can be used with the
+expected logical operators based on the possible values within a given column
+and there are various functions such as `starts_with(), ends_with(), contains()`
+etc. that can be used within `select()` instead of writing out all the names of
+the desired columns (especially useful in high-dimensional space). Note that
+filtering or the data (by observations using `filter()` or by columns using
+`select()`) can be performed before or after the `summarize()` function is used.
+
+"If you are trying to check if one thing is equal to one of several things, use
+the `%in%` operator instead of the equality operator (`==`)."
+
+The `mutate()` from dplyr is used to add/change columns to a tibble (a version
+of data frames). The `rename()` function is used to rename columns.
+
+The `gather()` function can be used to gather information that is spread across
+multiple attributes into one attribute. The `spread()` function is less
+common but can be used in a similar way that `table(<variable_1>, <variable_2>)`
+would be used.
+
+**Merging data** can be used with the `left_join(), right_join(), inner_join(),
+full_join()` functions, which have the expected 'SQL-esque' joining logic. When
+merging data frames, it is best if the attributes are being joined on are the
+same class.
+
+"Remember that if you are using piping, the first data frame (“left” for these 
+functions) is by default the dataframe created by the code right before the pipe.
+**When you merge data frames as a step in piped code, therefore, the “left” data
+frame is the one piped into the function while the “right” data frame is the
+one stated in the `*_join()` function call."**
