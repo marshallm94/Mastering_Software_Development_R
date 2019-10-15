@@ -254,9 +254,6 @@ to the desired time zone.
 
 More info can be found by downloading the PDF [here](https://www.jstatsoft.org/article/view/v040i03).
 
-Use the `object.size(<object_name>)` function to see how much memory an object
-is using.
-
 Using the `summary(<data_frame>)` function shows the distribution of data for
 each attribute in the `<data_frame>`.
 
@@ -270,7 +267,7 @@ to see if Anaconda has that package. If it does, install using
 The `nchar()` function will return the number of characters in a string variable.
 `toupper()` and `tolower()` have the expected affect on string variables.
 
-## Regex
+## Regex Expressions
 
 `grepl()` takes two arguments, a string ana a regular expression, and return
 `TRUE` or `FALSE` depending on if a match is made (think "grep *logical*").
@@ -343,6 +340,42 @@ or 'cba' in 'string'.
 
 ![](images/regex_characters.png)
 
+## Regex Functions
+
+`grep()` - Returns the indices of the matches.
+`sub()` - Replaces **a** matches to a regex with replacement.
+`gsub()` - Replaces **all** matches to a regex with replacement.
+`strsplit()` - Splits a string pased on a regex.
+
+## stringr package (Tidyverse)
+
+Most functions in the stringr package start with `str_*`, i.e. `str_extract(),
+str_order(), str_pad()` etc. Most of the functions also have the string argument
+as the first argument and the regex as the second argument.
+
+# Physical Memory in R
+
+The pryr package has various functions that are useful in understanding the
+memory that the current R session is working with (most notable `mem_used()`).
+
+Use the `object.size(<object_name>)` function to see how much memory an object
+is using. The pryr package also has a function for this - `object_size()`.
+To see the top N objects that are occupying the most memory:
+
+`sapply(ls(), function(x) object.size(get(x))) %>% sort %>% tail(N)`
+
+The `rm()` function can be used to delete object and free up memory. The
+`mem_change(rm())` function can be used in conjunction with `rm()` to see how
+much memory was freed up.
+
+In R (appears to be same as C++):
+
+* integers are 4 bytes.
+* numerics are 8 bytes (recall numeric == double floating point integer in R).
+* characters are 1 byte per character.
+
+R has a garbage collector which runs automatically in the background, however
+it can be explicitly called using the `gc()` function.
 
 
 ## Plotting with ggplot
