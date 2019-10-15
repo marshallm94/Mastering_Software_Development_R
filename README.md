@@ -265,6 +265,27 @@ can prove troublesome. If that doesn't work, try `conda search -f r-<package_nam
 to see if Anaconda has that package. If it does, install using
 `conda install -c r r-<package_name>`.
 
+# Text Processing
+
+The `nchar()` function will return the number of characters in a string variable.
+`toupper()` and `tolower()` have the expected affect on string variables.
+
+## Regex
+
+`grepl()` takes two arguments, a string ana a regular expression, and return
+`TRUE` or `FALSE` depending on if a match is made (thiink "grep *logical*").
+
+Metacharacters:
+
+* "." - Any character (other than a new line).
+* "+" - One or more of the preceding expression.
+* "*" - Zero or more of the preceding expression.
+* "{}" - How many times should the preceding expression occur:
+	* "{n}" - preceding expression occurs *n* times.
+	* "{n,m}" - preceding expression occurs between *n* and *m* times.
+	* "{n,}" - preceding expression occurs *at least n* times.
+
+
 
 ## Plotting with ggplot
 
