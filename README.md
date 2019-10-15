@@ -273,17 +273,75 @@ The `nchar()` function will return the number of characters in a string variable
 ## Regex
 
 `grepl()` takes two arguments, a string ana a regular expression, and return
-`TRUE` or `FALSE` depending on if a match is made (thiink "grep *logical*").
+`TRUE` or `FALSE` depending on if a match is made (think "grep *logical*").
 
 Metacharacters:
 
-* "." - Any character (other than a new line).
-* "+" - One or more of the preceding expression.
-* "*" - Zero or more of the preceding expression.
-* "{}" - How many times should the preceding expression occur:
-	* "{n}" - preceding expression occurs *n* times.
-	* "{n,m}" - preceding expression occurs between *n* and *m* times.
-	* "{n,}" - preceding expression occurs *at least n* times.
+* `.` - Any character (other than a new line).
+* `+` - One or more of the preceding expression.
+* `*` - Zero or more of the preceding expression.
+* `{}` - How many times should the preceding expression occur:
+	* `{n}` - Preceding expression occurs *n* times.
+	* `{n,m}` - Preceding expression occurs between *n* and *m* times.
+	* `{n,}` - Preceding expression occurs *at least n* times.
+* `()` - Used to create a capturing group:
+	* `"(abc){2,}"` - Search for the string "abd" at least 2 times.
+* `\\w` - The 'words' character set, which specifies any letter, digit, or an
+underscore. The complement of this character set is `\\W` - **not** words.
+
+	* Example:
+	```R
+	grepl("\\w", "abcdefghijklmnopqrstuvwxyz")
+
+	[1] TRUE
+
+	grepl("\\W", "abcdefghijklmnopqrstuvwxyz")
+
+	[1] FALSE
+	```
+
+* `\\d` - The 'digits' character set, which specified any digits 0 - 9. The
+complement of this charcter set is `\\D` - **not** digits.
+
+	* Example:
+	```R
+	grepl("\\d", "abcdefghijklmnopqrstuvwxyz")
+
+	[1] FALSE
+
+	grepl("\\D", "abcdefghijklmnopqrstuvwxyz")
+
+	[1] TRUE
+	```
+
+* `\\s` - The 'whitespace' character set, which specifies any whitespace
+characters such as tabs, spaces, line breaks, etc. The complement of this
+character set is `\\S` - **not** whitespace.
+
+	* Example:
+	```R
+	grepl("\\s", "\n\n  \t")
+
+	[1] TRUE
+
+	grepl("\\S", "\n\n  \t")
+
+	[1] FALSE
+	```
+
+* `[]` - Used to specify a custom character set. If you want to search for 
+a moderately large set of order characters, use the hyphen `-`. For example,
+`grepl('[a-d]', 'string')` searches for any of the characters between `a` and `d`.
+* `^` - The negation symbol in regex (i.e. `grepl('[^a]', 'string')` searches for
+**not** 'a' in the string 'string'). **Must be used in brackets.**
+* `\\` - The escape charcters in order to enable the search of metacharacters
+as strings. i.e. `grepl('\\.', 'string.')` - search for the period in 'string.'
+* `^` - The start of the line symbol.
+* `$` - The end of the line symbol.
+* `|` - The OR metacharacter - i.e. `grepl('abc|cba', 'string')` search for 'abc'
+or 'cba' in 'string'.
+
+![](images/regex_characters.png)
 
 
 
