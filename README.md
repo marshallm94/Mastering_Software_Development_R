@@ -377,6 +377,25 @@ In R (appears to be same as C++):
 R has a garbage collector which runs automatically in the background, however
 it can be explicitly called using the `gc()` function.
 
+## Working with Big Data in R
+
+The `fread()` function in the `data.table` package is useful for reading in large
+data sets.
+
+**Note that many of the function in the `data.table` package, along with those
+in `dplyr` use non-standard evaluation, which will require extra steps when 
+employing them in custom packages.**
+
+The `Rcpp` package allows you to write code in C++ and connect it with R (useful
+for larger data sets).
+
+Check out [this link](https://cran.r-project.org/web/views/HighPerformanceComputing.html)
+for high performance computing (HPC) packages in R.
+
+The `DBI` package is a generic R-to-Database interface (similar to `Rpostgres`).
+
+**The `bigmemory` package (and its associates) can be used to work with data that
+is stored on disk as opposed to pullling it into memory.**
 
 ## Plotting with ggplot
 
