@@ -397,13 +397,90 @@ The `DBI` package is a generic R-to-Database interface (similar to `Rpostgres`).
 **The `bigmemory` package (and its associates) can be used to work with data that
 is stored on disk as opposed to pullling it into memory.**
 
-## Plotting with ggplot
+# Course: Advanced R Programming
 
-`ggmap` can be used to get the layout of a certain geographical area.
+Curly braces `{}` are not necessary for one line for loops. Example:
+
+	`for(i in 1:10) print(i)`
+
+`next` is used to go to the next iteration in a loop (analogous to `continue`
+in Python). `break` exits loop immediately.
+
+You can write some code (or better yet, a function to put within other functions)
+that ensures that the necessary packages are loaded, and if they aren't, installs
+them.
+
+```R
+check_pkg_deps <- function() {
+        if(!require(readr)) {
+                message("installing the 'readr' package")
+                install.packages("readr")
+        }
+        if(!require(dplyr))
+                stop("the 'dplyr' package needs to be installed first")
+}
+```
+
+The `require()` function returns `TRUE` or `FALSE` depending on whether a package
+can be loaded or not (as opposed to `library()` which returns an error message).
+
+Checking to ensure the arguments for a function are correct can be accomplished
+by using something similar to:
+
+```R
+## Check arguments
+if(!is.character(pkgname))
+		stop("'pkgname' should be character")
+if(!is.character(date))
+		stop("'date' should be character")
+if(length(date) != 1)
+		stop("'date' should be length 1")
+```
+
+R can partially match parameter names when calling functions.
+
+Use teh `args()` function to see the parameters of a functions:
+
+`args(<function_name_without_parens>)`
+
+You can pass functions as arguments to other functions (make sure they are
+passed without parenthesis but are called with them within the function).
+
+"Anonymous" functions are those that aren't assigned a name. These should typically
+be kept to logic that can fit on one line. The syntax is:
+
+```R
+function(x){#do stuff with x}
+```
+
+The `...` (ellipses) allows an indefinite number of arguments to be passed to a
+function (analogous to `*args` in Python). In order to use the arguments that are
+passed to the `...` parameter, simply use the parameter name as you normally would.
+**Note that all of the arguments that are passed to `...` will be used wherever
+`...` is used in your function; there is no way of separating them out**.
 
 
+You can make a `list()` have named elements by using the below synatx:
 
+```R
+x = list(bing='bong',bloop='floop')
 
+# or...
+
+x = list('bing'='bong','bloop'='floop')
+
+# both of the above are valid and can be accessed using the normal syntax:
+x[['bing']]
+x[['bloop']]
+```
+
+**To make your own binary operator**:
+
+```R
+%<operator_symbol>% <- function(left, right) {
+	# code that uses the left and right arguments
+}
+```
 
 
 
