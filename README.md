@@ -516,8 +516,16 @@ y is 7
 ```
 
 By default, the `reduce()` function starts with the firs element and moves to
-the last, however the `reduce_right()` function works in the opposite direction
-(starts at the last element and works toward the first).
+the last, however the `.dir` parameter allows you to reversed the direction if
+desired:
+
+```R
+reduce(c(1,2,3,4), <some_function> , .dir = 'backward')
+
+# or ...
+
+reduce(rev(c(1,2,3,4)), <some_function>)
+```
 
 The `has_element()` function is used on a vector/list ot see if an element exits.
 
