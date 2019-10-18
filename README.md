@@ -424,22 +424,9 @@ check_pkg_deps <- function() {
 The `require()` function returns `TRUE` or `FALSE` depending on whether a package
 can be loaded or not (as opposed to `library()` which returns an error message).
 
-Checking to ensure the arguments for a function are correct can be accomplished
-by using something similar to:
-
-```R
-## Check arguments
-if(!is.character(pkgname))
-		stop("'pkgname' should be character")
-if(!is.character(date))
-		stop("'date' should be character")
-if(length(date) != 1)
-		stop("'date' should be length 1")
-```
-
 R can partially match parameter names when calling functions.
 
-Use teh `args()` function to see the parameters of a functions:
+Use the `args()` function to see the parameters of a functions:
 
 `args(<function_name_without_parens>)`
 
@@ -480,11 +467,213 @@ x[['bloop']]
 %<operator_symbol>% <- function(left, right) {
 	# code that uses the left and right arguments
 }
+
+# for example
+%p% <- function(left, right){
+	paste(left, right, sep = " ")
+}
 ```
 
+## Functional Programming
+
+Functional programming "treats computation as the evaluation of mathematical
+functions and avoids changing-state and mutable data."
+
+The `purr` package has many functions centered around functional programming.
+
+the `map_*()` family of functions (in the `purr` package - `map_at(), map_lgl(), map_chr()` etc.)
+applies a function to a vector/list and returns a vector/list with element *i* 
+of the returned vector/list being the result of putting element *i* of the 
+input list as the argument to the function.
+
+Similarly, the `map2_*()` family of functions can map a function onto two vectors
+of the same length. The `pmap_*()` family of functions can do the same thing for
+an arbitrary number of vectors/lists (the first argument to these functions
+is a list of vector/lists).
+
+Contrasting to `map_*()`-esque functions, the `reduce()` function iteratively 
+reduces a list/vector down into one element (i.e. the first element is combined
+with second element, that combination is combined with the third element, that
+combination is combined with the fourth, etc). Example:
+
+```R
+reduce(c(1, 3, 5, 7), function(x, y){
+  message("x is ", x)
+  message("y is ", y)
+  message("")
+  x + y
+})
+x is 1
+y is 3
+
+x is 4
+y is 5
+
+x is 9
+y is 7
+
+[1] 16
+```
+
+By default, the `reduce()` function starts with the firs element and moves to
+the last, however the `reduce_right()` function works in the opposite direction
+(starts at the last element and works toward the first).
+
+The `has_element()` function is used on a vector/list ot see if an element exits.
+
+### Filter Functions
+
+The filter group of functions take a vector/list and a predicate function
+(returns TRUE/FALSE based on input) and return a vector of the elements in the 
+input vector that meet the criteria. Example:
+
+```R
+# using the keep function...
+keep(1:20, function(x){
+  x %% 2 == 0
+})
+ [1]  2  4  6  8 10 12 14 16 18 20
+
+# using the discard function (think opposite of keep())...
+discard(1:20, function(x){
+  x %% 2 == 0
+})
+ [1]  1  3  5  7  9 11 13 15 17 19
+```
+
+**The `compose()` function can be used to combine any number of functions into
+one function**
+
+## Recursion
+
+```R
+fibonacci <- function(n) {
+	stopifnot(n > 0)
+	if (n == 1) {
+		return(0)
+	} else if (n == 2) {
+		return(1)
+	} else {
+		return(fibonacci(n-1) + fibonacci(n-2))
+	}
+}
+```
+
+One way to speed up recursive functions is to take advantage of [memoization](https://en.wikipedia.org/wiki/Memoization)
+which stores the result of a recursive function in a table once it has been
+calculated. This can drastically decrease computation time for inputs to 
+recursive functions that have to go through many iterations of calling themselves.
+
+```R
+fib_tbl <- c(0, 1, rep(NA, 23))
+
+fib_mem <- function(n){
+  stopifnot(n > 0)
+  
+  if(!is.na(fib_tbl[n])){
+    fib_tbl[n]
+  } else {
+	# the <<- operator is used to modify objects outside the scope of 
+	# the current function
+    fib_tbl[n - 1] <<- fib_mem(n - 1)
+    fib_tbl[n - 2] <<- fib_mem(n - 2)
+    fib_tbl[n - 1] + fib_tbl[n - 2]
+  }
+}
+
+map_dbl(1:12, fib_mem)
+ [1]  0  1  1  2  3  5  8 13 21 34 55 89
+```
+
+**The `source(<filepath.R>)` is how you run a script that you are
+working on in an interactive R session (or bring functions written in a separate
+script into the current namespace).**
+
+The `microbenchmark` package can be used for benchmarking R code performance.
+
+## Expressions and Environments
+
+### Expressions
+
+Using expressions allows you to manipulate code using code:
+
+The `quote()` function is used to create an expression.
+
+The `eval()` function is then used to evaluate the expression created by `quote()`.
+
+You can reverse this process using the `deparse()` function (turns a quoted
+expression into its original 'source' code).
+
+### Environments
+
+While most variables you use are part of the global environment (i.e. namespace)
+you can create a new environment using the `new.env()` function. Once this is
+created, you can assign variables to that environment using the familiar syntax:
+
+```R
+data_env <- new.env()
+data_env$main_df <- read_csv(<whatever>)
+
+# or...
+assign("main_df", read_csv(<whatever>), data_env)
+```
+
+To retrieve a variable from an environment you have one of two options:
 
 
+```R
+data_env$main_df
 
+# or...
+get("main_df", envir = data_env)
+```
 
+The `<<-` is called the *complex assignment operator* and is used to modify
+(or even create) variable in the parent environment/namespace (i.e. modify a
+global variable within a function).
 
+## Error Handling
 
+There are a few essential functions for handling errors and exceptions in R:
+
+* `stop(<message>)` - Returns and error with <message>.
+* `stopifnot(<logical_expression>)` - Stops a program is one of a series of
+logical arguments are not met.
+* `warning()` - Prints a warning to the console (does **not** stop the execution
+of the script).
+* `message()` - prints a message to the console.
+
+Checking to ensure the arguments for a function are correct can be accomplished
+by using something similar to:
+
+```R
+## Check arguments
+if(!is.character(arg1))
+		stop("'arg1' should be character")
+if(!is.character(arg2))
+		stop("'arg2' should be numeric")
+if(length(arg3) != 1)
+		stop("'arg3' should be length 1")
+```
+
+The above could (and should) be implement using the `stopifnot()` function above.
+
+**The `tryCatch()` function is the workhorse of handling errors and warnings in R.**
+
+The first argument to `tryCatch()` is *any* R expression, followed by conditions
+which specify how to handle an error or warning.
+
+```R
+beera <- function(expr){
+  tryCatch(expr,
+         error = function(e){
+           message("An error occurred:\n", e)
+         },
+         warning = function(w){
+           message("A warning occured:\n", w)
+         },
+         finally = {
+           message("Finally done!")
+         })
+}
+```
