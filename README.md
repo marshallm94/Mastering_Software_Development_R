@@ -399,6 +399,8 @@ is stored on disk as opposed to pullling it into memory.**
 
 # Course: Advanced R Programming
 
+**First and foremost: R is a functional programming language**
+
 Curly braces `{}` are not necessary for one line for loops. Example:
 
 	`for(i in 1:10) print(i)`
