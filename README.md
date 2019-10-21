@@ -685,3 +685,108 @@ beera <- function(expr){
          })
 }
 ```
+
+## Debugging in R
+
+R comes with a few builtin tools to help the debugging process:
+
+* `browser()` - an interactive debugging environment that allows you to step
+through code one expression at a time.
+
+* `debug()/debugonce()` - a function that initiates the browser within a function.
+
+* `trace(<function_name_in_quotes>)` - a function that allows you to temporarily insert pieces of code into
+a function to modify their behavior.
+	* Calling `trace("f")` will print a message to the console everytime the funciton
+	`f()` is called.
+
+* `recover()` - a function for navigating the function call stack after a function
+has thrown an error.
+
+* `traceback()` - a function that prints out the function call stack after an 
+error occurs but does nothing if there is no error.
+	* Should be called immediately after an error occurs.
+
+`trace()` is the main function that is used for tracking down bugs in packages
+that you did not author.
+
+## Profiling and Benchmarking
+
+Two main benchmarking packages are `microbenchmark` and `profvis`.
+
+The `microbenchmark()` function (within the `microbenchmark` package) will
+repeatedly run a section of code multiple times (100 is the default, can be changed
+with the `times` parameters) and provide summary statistics on how long the
+code took to run. You can include multiple lines of code in the `microbenchmark()`
+function, however line must be separated by a comma.
+
+```R
+library(microbenchmark)
+microbenchmark(a <- rnorm(1000), 
+               b <- mean(rnorm(1000)))
+Unit: microseconds
+                   expr    min      lq     mean median      uq     max
+       a <- rnorm(1000) 74.489 75.2365 77.30950 75.656 76.9050  92.557
+ b <- mean(rnorm(1000)) 80.306 81.1345 86.85133 81.873 88.7785 129.834
+ neval
+   100
+   100
+```
+
+Or, comparing to functions that perform the same task:
+
+
+```R
+record_temp_perf <- microbenchmark(find_records_1(example_data, 27), 
+                                   find_records_2(example_data, 27))
+record_temp_perf
+Unit: microseconds
+                             expr      min        lq     mean   median
+ find_records_1(example_data, 27)  674.628  704.5445  770.646  719.366
+ find_records_2(example_data, 27) 1064.935 1095.5015 1183.014 1131.834
+       uq      max neval
+  753.949 4016.827   100
+ 1190.596 4249.408   100
+```
+
+The `microbenchmark()` function returned an object that can be plotted using
+`autoplot(<output_of_microbenchmark_call>)` (note that `autoplot()` requires
+`ggplot2` to be loaded)
+
+###`profvis`
+
+The `profvis()` function (a part of the `profvis`) package is useful for determining
+which parts of a function (or piece of code) are bottlenecks. **Requires RStudio**
+
+To use `profvis()` on multiple lines of code, enclose them in curly braces`{}`.
+
+The `profvis()` has two options with which one can profile your code. The
+toggle button to choose between these two options will pop up when you profile
+your code:
+
+* **Data** option - The data option allows you to view the time usage of each
+first level functin call. Each of these calls can be expanded and you can "dig
+down" within each function to determine which portions are the bottlenecks.
+
+* **Flame Graph** option - This option opens up two panels. The top panel shows
+the code with the memory and time used for that section of code. The bottom panel
+also visualized the code but has time on the horizontal axis and shows the full
+call stack at each time sample.
+
+Check out the following websites for more info:
+
+* [Sections on Performant Code](http://adv-r.had.co.nz/Performance.html)
+* ["FasteR, HigheR, StrongeR"](https://www.noamross.net/archives/2013-04-25-faster-talk/)
+
+Generally, the `microbenchmark()` function should be used for smaller portions
+of code, while `profvis()` can be used for more extensive chunks of code.
+
+## Non-standard Evaluation
+
+Many functions within the tidyverse use non-standard evaluation and these should
+be avoided when writing functions for other people. **Most tidyverse functions
+have a standard evaluation alternative with the same name followed by an
+underscore `mutate()` to `mutate_()`.**
+
+To learn more, try [Advanced R](http://adv-r.had.co.nz/Computing-on-the-language.html).
+
