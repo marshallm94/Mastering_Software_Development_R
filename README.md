@@ -790,3 +790,212 @@ underscore `mutate()` to `mutate_()`.**
 
 To learn more, try [Advanced R](http://adv-r.had.co.nz/Computing-on-the-language.html).
 
+## OOP in R
+
+### S3
+
+S3 and S4 are the "older" OOP frameworks in R, while "RC" is the new system for
+OOP.
+
+In the S3 system, you can arbitrarily assign a class to any object (goes against
+most OOP principals). This is performed using the `structure()` function:
+
+```R
+special_char_a <- structure('a', class = 'special_char')
+class(special)
+```
+
+You can create a constructor (a function that initializes an object of the
+designated class) as you would a normal function:
+
+```R
+car_s3 <- function(make, model, color, weight, axels=2) {
+	structure(list('make'=make,
+				   'model'=model,
+				   'color'=color,
+				   'weight'=weight,
+				   'axels'=axels),
+			  class = 'car_s3')
+}
+
+my_car <- car_s3('toyota','land cruiser','white',6000)
+```
+
+To create a method that is associated with an already existing class, you use R's
+**generic methods** system.
+
+```R
+# creating name of method
+<name_of_method> <- function(x) UseMethod("<name_of_method")
+```
+
+Note that in the above, `x` is analogous to `self` in Python's OOP framework.
+
+Once the name of the method has been defined, the logic can be written.
+**Contrasting Python, R defines methods using `<method_name>.<class_name>`**
+
+```R
+# defining name of method
+is_SUV <- function(x) UseMethod("is_SUV")
+
+is_SUV.car_s3 <- function(x){
+	if (x$weight > 5000) {
+		return(TRUE)
+	} else if (x$weight <= 5000) {
+		return(FALSE)
+	}
+}
+
+# testing the function on my_car
+is_SUV(my_car)
+[1] TRUE
+```
+
+You can specify a default for a method (in case an object of the wrong class is
+passed to the method) using the following syntax:
+
+```R
+is_SUV.default <- function(x) {
+	return(NA)
+}
+```
+
+Additionally, you can rewrite generic methods (e.g. `print()`) to handle objects
+of your custom class differently:
+
+```R
+print.car_s3 <- function(x) {
+	cat(x$color, x$make, x$model)
+	return(invisible(x))
+}
+```
+
+**It is convention for `print()` methods to return the object itself invisibly.**
+(see above)
+
+The S3 class doesn't have a formal system for defining class attributes, however
+a `list()` is the most common way to implement this.
+
+The `summary()` method can also be redefined for user-defined classes however
+this method **returns an object of class "summary_<class_name>" by convention**
+
+### S4
+
+Contrary to the S3 system, the S4 system uses the `setClass()` function to create
+a new class. This function has three parameters:
+
+1. `Class` - The name of the class as a string.
+2. `slots` - A named list of attributes for the class with the class of each
+attribute specified.
+3. `contains` - (optional) The super-class that the current class inherits from
+(if applicable).
+
+
+```R
+setClass("vehicle",
+		 slots = list(purpose = 'character',
+					  material = 'character',
+					  propulsion_system = 'character'))
+
+setClass("car",
+		 slots = list(type = 'character',
+					  color = 'character',
+					  number_wheels = 'numeric',
+					  number_seats = 'numeric'),
+		 contains = 'vehicle')
+```
+
+Once the classes have been setup, you can create a new instance of a class using
+the `new()` function.
+
+```R
+my_car <- new("car", type="SUV",
+					 color='white',
+					 number_wheels=4,
+					 number_seats=5)
+```
+
+**Unlike S3 (and most of R objects), you can access different attributes of an
+S4 class using the `@` operator**:
+
+```R
+my_car@color
+```
+
+Similar to S3 OOP, you need to declare an method prior to defining the logic for
+that method. In S4, you do this using the `setGeneric()` and `standardGeneric()`
+functions:
+
+```R
+setGeneric("<new_generic_method_name>", function(x) {
+	standardGeneric("<new_generic_method_name>")
+})
+```
+Note that if you want to define a method using an already existing function name
+(e.g. `print()`), you can do so using the below manner:
+
+```R
+setGeneric("print")
+```
+
+Once the method is declared, you define the logic for it using the `setMethod()`
+function:
+
+```R
+setMethod("<new_generic_method_name",
+		  signature="<name_of_class_as_character>",
+		  definition = function(x){
+			# put all your logic here
+})
+```
+
+### Reference Classes
+
+The `setRefClass()` follows a more modern approach to OOP, which allows you to
+define the classes fields, methods and super-classes:
+
+```R
+Student <- setRefClass("Student",
+					   contains = "<super_class_name_as_character",
+					   fields = list(name = 'character',
+									 grad_year = 'numeric',
+									 credits = 'numeric',
+									 id = 'character',
+									 courses = 'list'),
+					   methods = list(
+									  hello = function() {
+										  paste("Hi! my name is", name)
+									  },
+									  add_credits = function(n) {
+										  credits <<- credits + n
+									  },
+									  get_email = function() {
+										  paste0(id, "@gmail.com")
+									  }
+									  )
+)
+```
+
+**Note that the `add_credits()` function uses the `<<-` operator in order to change
+the state of the instance (the credits field specifically)**
+
+The `contains` argument is optional (for those classes with super-classes).
+
+Once the class has been defined, you can create a new instance using the `new()`
+**method**:
+
+```R
+jason_bourne <- Student$new(name = "Jason Bourne",
+							grad_year = 2000,
+							credits = 1000,
+							id = 'TREADSTONE',
+							courses = list("Assassination 101",
+										   "Hand Fighting 412",
+										   "Government Deception 500"))
+```
+
+You can access the fields and methods using the traditional `$` operator:
+
+```R
+jason_bourne$add_credits(100)
+```
