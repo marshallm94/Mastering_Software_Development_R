@@ -517,7 +517,7 @@ y is 7
 [1] 16
 ```
 
-By default, the `reduce()` function starts with the firs element and moves to
+By default, the `reduce()` function starts with the first element and moves to
 the last, however the `.dir` parameter allows you to reversed the direction if
 desired:
 
