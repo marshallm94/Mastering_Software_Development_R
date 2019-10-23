@@ -7,17 +7,24 @@ make_LD <- function(data_frame) {
 	return(object)
 }
 
-print.LongitudinalData <- function(x){
-	return(paste("Longitudinal dataset with", length(unique(x$id)), "subjects."))
-}
-
-make_subject <- function(x, id) {
+make_subject <- function(x, subject_id) {
 	stopifnot(class(x) == c("LongitudinalData", "data.frame"),
-			  class(id) == "numeric")
-	object <- structure(x[x$id == id,],
-						list(id = id),
+			  class(subject_id) == "numeric")
+	object <- structure(list(id = subject_id,
+							 subset = x[x$id == subject_id,]),
 						class = 'subject')
 	return(object)
+}
+
+print.subject <- function(x) {
+	return(paste("Subject ID:", x$id))
+}
+
+summary.subject <- function(x) {
+	x$subset %>%
+		group_by(visit, room) %>%
+		summarize(mean = mean(value)) %>%
+		spread(key=room, value=mean)
 }
 
 subject <- function(x, id) UseMethod("subject")
@@ -33,10 +40,10 @@ subject.LongitudinalData <- function(x, id) {
 	}
 }
 
-print.subject <- function(x) {
-	stopifnot(class(x) == 'subject')
-	return(paste("Subject ID:", x$id))
+print.LongitudinalData <- function(x){
+	return(paste("Longitudinal dataset with", length(unique(x$id)), "subjects."))
 }
+
 
 make_visit <- function(x) {
 	object <- structure(x, class = 'visit')
@@ -49,7 +56,7 @@ make_room <- function(x) {
 }
 
 summary.LongitudinalData <- function(x) {
-	data$data_frame[data$data_frame$id == subject_id,] %>%
+	x[x$id == subject_id,] %>%
 		group_by(visit, room) %>%
 		summarize(mean = mean(value)) %>%
 		spread(key=room, value=mean)
