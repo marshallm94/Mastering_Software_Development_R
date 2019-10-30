@@ -693,7 +693,8 @@ beera <- function(expr){
 R comes with a few builtin tools to help the debugging process:
 
 * `browser()` - an interactive debugging environment that allows you to step
-through code one expression at a time.
+through code one expression at a time. **Once you are within a "browser() window"
+in R, type `c` to exit and return to the normal console**.
 
 * `debug()/debugonce()` - a function that initiates the browser within a function.
 
@@ -796,8 +797,8 @@ To learn more, try [Advanced R](http://adv-r.had.co.nz/Computing-on-the-language
 
 ### S3
 
-S3 and S4 are the "older" OOP frameworks in R, while "RC" is the new system for
-OOP.
+S3 and S4 are the "older" OOP frameworks in R, while "RC" (also called "R5") 
+is the new system for OOP.
 
 In the S3 system, you can arbitrarily assign a class to any object (goes against
 most OOP principals). This is performed using the `structure()` function:
