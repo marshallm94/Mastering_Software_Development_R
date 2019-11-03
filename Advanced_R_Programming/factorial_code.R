@@ -41,13 +41,13 @@ Factorial_mem <- function(n) {
 }
 
 library(microbenchmark)
-file.create('benchmark_results.txt')
+file.create('factorial_output.txt')
 write.table(summary(microbenchmark(Factorial_loop(0),
            Factorial_reduce(0),
            Factorial_func(0),
            Factorial_mem(0))
      ),
-   file = 'benchmark_results.txt',
+   file = 'factorial_output.txt',
    sep = ",",
    row.names = FALSE
 )
@@ -57,7 +57,7 @@ write.table(summary(microbenchmark(Factorial_loop(15),
            Factorial_func(15),
            Factorial_mem(15))
      ),
-   file = 'benchmark_results.txt',
+   file = 'factorial_output.txt',
    sep = ",",
    append = TRUE,
    col.names = FALSE,
@@ -69,7 +69,7 @@ write.table(summary(microbenchmark(Factorial_loop(50),
            Factorial_func(50),
            Factorial_mem(50))
      ),
-   file = 'benchmark_results.txt',
+   file = 'factorial_output.txt',
    sep = ",",
    append = TRUE,
    col.names = FALSE,
