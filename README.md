@@ -1002,3 +1002,83 @@ You can access the fields and methods using the traditional `$` operator:
 ```R
 jason_bourne$add_credits(100)
 ```
+
+# Course: Building R Packages
+
+A **comprehensive** guide to the details of building an R package can be found
+[here](https://cran.r-project.org/doc/manuals/r-release/R-exts.html).
+
+To build packages using RStudio (makes things easier), follow the steps outlined
+[here](https://github.com/rdpeng/daprocedures/blob/master/lists/Rpackage_preflight.md).
+
+## Basic Structure of an R Package
+
+R packages begin life as a directory on your computer with (at least) 4 files:
+
+* `R` - A directory that contains all of your R code. These can be all in one
+file, but probably should be in seperate files based on some grouping logic.
+
+* `man` - A directory that contains the documentation for all the **exported**
+objects/functions within a package (i.e. if your package has 100 functions but
+only 25 of those are exported, you would only need documentation for those 25).
+
+**Use the `roxygen2` package to auto-generate documentation.**
+
+* `NAMESPACE` - A file the defines what the user has access to. Any function that
+you (the creator of a package) want the user to have access to will be in an `export()`
+statement within this file. For example:
+
+```R
+# my_function would be defined in a file within the R directory
+export("my_function")
+```
+
+If the package your are writing depends on any functions from other packages,
+they are imported within this file. For example:
+
+```R
+importFrom("<package_name",
+		   "<function_needed_within_package_name>",
+		   "<another_function_needed_within_package_name>")
+
+```
+
+It is better to use `importFrom()` and be specific about what external functions
+your packages relies upon than to use `import()` and import an entire package.
+
+**Generally speaking, you want to minimize the number of functions you export/allow
+the user to have access to.**
+
+* `DESCRIPTION` - A file containing metadata regarding the package (author,
+version number, date of release, dependencies/imports, etc).
+
+If there are two functions (or objects of any type for that matter) that have
+the same name, you can use *scope resolution operator* to define the full
+function/object name:
+
+```R
+<package_name>::<function/object_name>
+```
+
+**Loading vs. Attaching a Package Namespace**
+Importing package namespace Y into another package X gives package X access to
+all the functions/objects within package Y. When package Y is loaded, **it is only
+available to package X**. Attaching package namespace Y to package X puts package
+Y on the search list and (for better or worse), gives the user access to all those
+functions when they use package X.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
