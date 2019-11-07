@@ -1067,18 +1067,125 @@ available to package X**. Attaching package namespace Y to package X puts packag
 Y on the search list and (for better or worse), gives the user access to all those
 functions when they use package X.
 
+## The `devtools` Package
 
+Find Hadley Wickham's book for developing R packages [here](http://r-pkgs.had.co.nz).
 
+The `devtools` package has many useful functions for facilitating package development,
+a few of which are:
 
+* `create(<dir_name>)` - Creates the directory framework for a package
+(`R` directory, NAMESPACE and DESCRIPTION files, etc).
 
+## Documentation
 
+for function specific help files, use the `roxygen2` package. More in depth
+documentation (README's and vignettes (long form guides)). If you decide to create
+a vignette (or multiple vignettes, depending on the size of your package), these
+will go in a `vignettes` subdirectory within the package directory.
 
+```R
+devtools::use_vignette()
+```
 
+### `roxygen2`
 
+When using `roxygen2` to documente your R functions, place the "docstring" for
+the function **directly** above the function it accompanies. All lines that
+start with `#'` (pound sign and an apostrophe) will be considered part of the
+documentation.
 
+```R
+#' Print "Hello world" 
+#'
+#' This is a simple function that, by default, prints "Hello world". You can 
+#' customize the text to print (using the \code{to_print} argument) and add
+#' an exclamation point (\code{excited = TRUE}).
+#'
+#' @param to_print A character string giving the text the function will print
+#' @param excited Logical value specifying whether to include an exclamation
+#'    point after the text
+#' 
+#' @return This function returns a phrase to print, with or without an 
+#'    exclamation point added. As a side effect, this function also prints out
+#'    the phrase. 
+#'
+#' @examples
+#' hello_world()
+#' hello_world(excited = TRUE)
+#' hello_world(to_print = "Hi world")
+#'
+#' @export
+hello_world <- function(to_print = "Hello world", excited = FALSE){
+    if(excited) to_print <- paste0(to_print, "!")
+    print(to_print)
+}
+```
 
+Running `devtools::document()` will render the documentation files **which will
+populate in the `man/` subdirectory** of the package directory.
 
+[Here](https://bookdown.org/rdpeng/RProgDA/documentation.html#common-roxygen2-tags)
+are a few common tags used in `roxygen2` documentation. A few to be wary of:
 
+* *Always* use the `@examples` instead of the `@example` tag to demonstrate
+code within documentation
 
+* The `@inheritParams` tag allows you to inherit the parameter documentation you
+wrote if you are using the same (or some of the same) parameters in the current
+function.
 
+* Using the `@export` tag at the end of the documentation (directly above the
+function) will allow `roxygen2` to create the NAMESPACE file for you.
 
+## Data Within a Package
+
+Since most packages group functions together that manipulate similar data, it
+is usually a good idea to include some data to demonstrate how functions are used.
+
+Data that is included in packages should be documented so that users can use
+common functionality like `?<data_set_name>` and will be able to view some useful
+information.
+
+```R
+#' Production and farm value of maple products in Canada
+#'
+#' @source Statistics Canada. Table 001-0008 - Production and farm value of
+#'  maple products, annual. \url{http://www5.statcan.gc.ca/cansim/}
+#' @format A data frame with columns:
+#' \describe{
+#'  \item{Year}{A value between 1924 and 2015.}
+#'  \item{Syrup}{Maple products expressed as syrup, total in thousands of gallons.}
+#'  \item{CAD}{Gross value of maple products in thousands of Canadian dollars.}
+#'  \item{Region}{Postal code abbreviation for territory or province.}
+#' }
+#' @examples
+#' \dontrun{
+#'  maple
+#' }
+"maple"
+```
+
+Data frames that you include in your package should follow the general schema above where the documentation page has the following attributes:
+
+* An informative title describing the object.
+
+* A @source tag describing where the data was found.
+
+* A @format tag which describes the data in each column of the data frame.
+
+* And then finally a string with the name of the object
+
+## Software Testing with `testhat`
+
+Check out [this link](https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf)
+for an introduction to the `testhat` package
+
+Tests are usually kept in their own `.R` file. Multiple tests should be in the
+`tests` subdirectory.
+
+Individual files can have their test run using the `test_file()` function while
+a directory of tests can all be tested together using the `test_dir()` function.
+
+All tests can be run using the 'check' button on the build tab (implicitly runs
+`R CMD check`).
