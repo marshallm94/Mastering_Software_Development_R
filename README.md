@@ -1189,3 +1189,64 @@ a directory of tests can all be tested together using the `test_dir()` function.
 
 All tests can be run using the 'check' button on the build tab (implicitly runs
 `R CMD check`).
+
+Both Travis and AppVeyor connect with your GitHub account.
+
+* Use [Travis](https://travis-ci.org) to test your package in a Linux environment.
+    * When using Travis, your package repo will need a YAML file. Using 
+    `devtools::use_travis()` within your package directory will create a basic
+    `travix.yml` file for you.
+ 
+* Use [AppVeyor](https://www.appveyor.com) to test your package in a Windows
+environment.
+    * When using AppVeyor, your package repo will need a YAML file. Using 
+    `devtools::use_appveyor()` within your package directory will create a basic
+    `travix.yml` file for you.
+
+## Cross Platform Development
+
+Although R will run the same on any OS, filepaths should be created using R's
+builtin functions instread of manually creating them (granted that is the case
+with any language...)
+
+The `select.list()` function is a good option for when you want to create
+functions that interact with your user (i.e. ask permission to create a file
+or directory).
+
+The `rappdirs` package contains functions that allow access to other directories
+if the package you are creating needs to.
+
+The `install.packages()` function can install packages that are compressed as a
+zip file.
+
+If you are writing some function/package for which you will need system/hardware
+information, you can use the `.Platform` or `.Machine` environment variables.
+(Both of these are objects with various attributes that can be accessed using the
+standard `$` operatori - i.e. `.Platform$OS.type`).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
