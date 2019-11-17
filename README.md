@@ -1011,6 +1011,25 @@ A **comprehensive** guide to the details of building an R package can be found
 To build packages using RStudio (makes things easier), follow the steps outlined
 [here](https://github.com/rdpeng/daprocedures/blob/master/lists/Rpackage_preflight.md).
 
+**General Outline**m
+
+1. Open an R console and run `devtools::create("<dir_name>")`
+	* This will create the appropriate directory framework for your package
+
+2. Write/Move any .R files that should be included in your package into the R/
+directory that was just created.
+
+3. Write the documentation in the proper `roxygen2` format (including data,
+if needed).
+
+4. Once all code and documentation is complete, go up one directory (to where
+the package directory would be listed by running `ls` from the command line),
+and run `R CMD build yourDirectory/`. This will create a tarball **which is
+your package**. Once this is complete, run `R CMD check yourPackage_<version>.tar.gz`
+
+Building the package and then checking it will allows the build process to ignore
+any hidden objects (e.g. git objects) so they aren't checked in the checking process.
+
 ## Basic Structure of an R Package
 
 R packages begin life as a directory on your computer with (at least) 4 files:
@@ -1222,31 +1241,4 @@ zip file.
 If you are writing some function/package for which you will need system/hardware
 information, you can use the `.Platform` or `.Machine` environment variables.
 (Both of these are objects with various attributes that can be accessed using the
-standard `$` operatori - i.e. `.Platform$OS.type`).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+standard `$` operator - i.e. `.Platform$OS.type`).

@@ -6,7 +6,10 @@
 #'    R (should be a CSV file) .
 #' 
 #' @return The CSV data in tibble (tidyverse version of data frames) format.
+#' 
 #' @importFrom readr read_csv
+#' @importFrom dplyr tbl_df
+#' 
 #' @note If the file doesn't exist, a message will be displayed saying so.
 #'
 #' @examples
@@ -27,7 +30,7 @@ fars_read <- function(filename) {
 #'
 #' @param year The year that you would like in the filename.
 #' 
-#' @return A character to which data could be saved.  
+#' @return A character object that represents the filename for car fatality data.  
 #'
 #' @examples
 #' filename_2018 <- make_filename(2018)
@@ -46,8 +49,12 @@ make_filename <- function(year) {
 #' @param years A vector of years which have an associated file in the current
 #'    working directory.
 #' 
-#' @return A list of data frames, each with two columns; MONTH and year.
-#' @importFrom dplyr 
+#' @return A list of data frames, each with two columns; MONTH and year. Each
+#' row in a data frame represent a fatal car accident in that month and year. 
+#' 
+#' @importFrom dplyr mutate
+#' @importFrom dplyr select
+#' 
 #' @note If one of the years specified doesn't have an associated file, and error
 #'    will be thrown.
 #' 
@@ -127,7 +134,12 @@ fars_read_years <- function(years) {
 #'     should be displayed, grouped by Month.
 #' 
 #' @return a data frame.
-#' @importFrom dplyr
+#' 
+#' @importFrom dplyr bind_rows 
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarize 
+#' @importFrom dplyr spread 
+#' 
 #' @note If one of the years specified doesn't have an associated file, and error
 #'    will be thrown.
 #' 
@@ -159,19 +171,21 @@ fars_summarize_years <- function(years) {
 }
 
 #' Creates a geographical plot showing the accidents for a given year in a given
-#'    state.
+#'    state. Each accident is plotted as a single dot.
 #'
 #' @param state.num The state number which you would like displayed.
-#' @param year The year of data for which data should be displayed. 
+#' @inheritParams make_filename
 #'
-#' 
-#' @return Displays a plot.
-#' @importFrom maps
-#' @importFrom dplyr
-#' @note If one of the years specified doesn't have an associated file, and error
-#'    will be thrown.
+#' @return Displays a plot (no object returned).
+#'
+#' @importFrom maps map
+#' @importFrom dplyr filter
+#' @importFrom graphics points 
+#'
+#' @note If the state.num argument doesn't correspond to a state within the 
+#'    specified data frame's STATE column, and error will be thrown.
 #' @note If there are no accidents to plot for the specified state.num/year combination
-#'   a message display saying so. 
+#'   a message will display saying so. 
 #' 
 #' @examples
 #' fars_map_state(42, 2015)
