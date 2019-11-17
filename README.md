@@ -1242,6 +1242,3 @@ If you are writing some function/package for which you will need system/hardware
 information, you can use the `.Platform` or `.Machine` environment variables.
 (Both of these are objects with various attributes that can be accessed using the
 standard `$` operator - i.e. `.Platform$OS.type`).
-
-
-test
