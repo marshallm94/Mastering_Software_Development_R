@@ -1032,10 +1032,23 @@ directory that was just created.
 3. Write the documentation in the proper `roxygen2` format (including data,
 if needed).
 
-4. Once all code and documentation is complete, go up one directory (to where
-the package directory would be listed by running `ls` from the command line),
-and run `R CMD build yourDirectory/`. This will create a tarball **which is
-your package**. Once this is complete, run `R CMD check yourPackage_<version>.tar.gz`
+4. Once all code and documentation is complete, go to the package's main directory,
+open up the R console (`R`) and run the following commands:
+
+```R
+library(devtools)
+
+# checks to see if all tests pass
+test()
+
+# checks to see if all files that are needed are present, tests pass, ...
+# everything needed for a packages to be successfully installed.
+check()
+```
+
+Change the code/tests as needed until there are no warnings, notes or errors.
+If your github is connected to [Travis](https://travis-ci.org), a build will
+start automatically.
 
 Building the package and then checking it will allows the build process to ignore
 any hidden objects (e.g. git objects) so they aren't checked in the checking process.
