@@ -1013,8 +1013,18 @@ To build packages using RStudio (makes things easier), follow the steps outlined
 
 **General Outline**m
 
-1. Open an R console and run `devtools::create("<dir_name>")`
-	* This will create the appropriate directory framework for your package
+1. Open an R console and run the following commands
+
+```R
+library(devtools)
+
+# Creates the appropriate directory framework for your package
+create("<package_name")
+
+# creates the test/ directory, creates test/testthat.R, adds testthat to the
+# DESCRIPTION file in the Suggests field
+use_testthat()
+```
 
 2. Write/Move any .R files that should be included in your package into the R/
 directory that was just created.
