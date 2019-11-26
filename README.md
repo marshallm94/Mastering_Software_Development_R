@@ -1265,3 +1265,44 @@ If you are writing some function/package for which you will need system/hardware
 information, you can use the `.Platform` or `.Machine` environment variables.
 (Both of these are objects with various attributes that can be accessed using the
 standard `$` operator - i.e. `.Platform$OS.type`).
+
+# Course: Building Data Visualization Tools
+
+The aesthetics that are required will depend on the graph that you want to
+create. For example:
+
+* color - color of **border** of element.
+* fill - color of **fill** of element.
+* alpha - transparency of element.
+
+**All of the above aesthetics can be passed data frame attributes to add more
+information to your plots**.
+
+If you would like to show different subsets of a dataframe (for example, when
+a qualitative variable is equal to one of multiple factors), use the `gridExtra`
+package. For example:
+
+(notice how the data argument can be used in the geom_x() function (instead of
+the ggplot() function) to specify different subsets of a data frame - or a 
+separate data frame altogether).
+
+```r
+library(gridExtra)
+
+plot1 <- ggplot() +
+  geom_line(data = val_loss_subset[val_loss_subset$method == 'constant',],
+             aes(x= epoch, y = value, color = 'Constant LR')) +
+  geom_line(data = val_loss_subset[val_loss_subset$method == 'cyclic',],
+             aes(x= epoch, y = value, color = 'Cyclic LR')) +
+  labs(x = NULL, y = "Loss", title = 'Nesterov | Constant vs. Cyclic Learning Rates')
+
+
+plot2 <- ggplot() +
+  geom_line(data = val_acc_subset[val_acc_subset$method == 'constant',],
+            aes(x= epoch, y = value, color = 'Constant LR')) +
+  geom_line(data = val_acc_subset[val_acc_subset$method == 'cyclic',],
+            aes(x= epoch, y = value, color = 'Cyclic LR')) +
+  labs(x = 'Epoch', y = 'Accuracy')
+
+grid.arrange(plot1, plot2, nrow=2)
+```
