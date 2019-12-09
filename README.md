@@ -1306,3 +1306,25 @@ plot2 <- ggplot() +
 
 grid.arrange(plot1, plot2, nrow=2)
 ```
+
+`xlab()`, `ylab()` and `ggtitle()` are the `ggplot2` way of adding labels to
+your plots.
+
+Where applicable, the `fill` attribute references the color you would like
+your plot to be filled with (as the name implies) while the `color` attribute
+refers to the **outline color** or your plot aesthetics.
+
+**Usefull `ggplot2` extensions to look into**:
+
+* `GGally` - the `ggpairs()` function allows you to see some useful EDA plots
+with minimal coding. For example:
+
+```r
+# show pairwise plots of the sex, wt, ht and age variables
+library(GGally)
+ggpairs(nepali %>% select(sex, wt, ht, age))
+```
+
+
+
+
