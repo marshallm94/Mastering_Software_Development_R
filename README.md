@@ -1316,6 +1316,8 @@ refers to the **outline color** or your plot aesthetics.
 
 **Usefull `ggplot2` extensions to look into**:
 
+* `gridExtra` - Easily arrange multiple plots in one image.
+* `ggthemes` - Allows you to easly change the theme of your plot.
 * `GGally` - the `ggpairs()` function allows you to see some useful EDA plots
 with minimal coding. For example:
 
@@ -1325,6 +1327,69 @@ library(GGally)
 ggpairs(nepali %>% select(sex, wt, ht, age))
 ```
 
+A few guidelines for good plots/images are:
 
+* Aim for high data density.
+	* Try to increase the "information to ink" ration in your plot as
+	much as possible. This means that anything that you put on the plot
+	should help communicate the information you are trying to communicate.
+	An redundant ink should be removed from the plot.
 
+* Use clear, meaningful labels.
+	* The first bullet point applied to this second one as well; make sure
+	that your labels are facilitating the ease of communicate with your
+	audience. For example, if you would be plotting a categorical variable
+	along the x-axis, flip the plot so the variables read easier (use the
+	`coord_flip()` function in ggplot2).
+
+* Provide useful references.
+	* Display visual references that allow the audience to take away what
+	you want them to (i.e. line of best fit to few trends). Check out the
+	following functions:
+		* `geom_smooth()`
+		* `geom_hline()`
+		* `geom_vline()`
+		* `geom_abline()`
+		* `geom_polygon()`
+		* `geom_path()`
+	* Use the `alpha` parameter to control the transparency of the
+	element so it doesn't take away fromt the main message of the image.
+
+* Highlight interesting aspects of the data.
+
+* Consider using small multiples.
+
+* Make order meaningful.
+
+Changing the theme in ggplot2 is achieved using the one of the folowing
+functions:
+
+* `theme_linedraw()`
+* `theme_bw()`
+* `theme_minimal()`
+* `theme_void()`
+* `theme_dark()`
+* `theme_classic()`
+
+In addition to these themes, check the `ggthemes` package for more.
+
+Note that information might be easier to communicate using faceting instead 
+of coloring for a factor variable (`facet_grid()` and `facet_wrap()`).
+
+Both the `facet_grid()` and `facet_wrap()` function allow you to specify more
+than one faceting variable. For example:
+
+```r
+worldcup %>%
+  filter(Team %in% c("Spain", "Netherlands")) %>%
+  ggplot(aes(x = Time, y = Shots)) + 
+  geom_point() +
+  facet_grid(Team ~ Position)
+```
+
+**Note that `ggplot2` functions expect categorical variable to be a `factor`
+class.**
+
+The `RColorBrewer` package provides sets of different colors to use for your
+plots.
 
