@@ -1284,7 +1284,8 @@ package. For example:
 
 (notice how the data argument can be used in the geom_x() function (instead of
 the ggplot() function) to specify different subsets of a data frame - or a 
-separate data frame altogether).
+separate data frame altogether). If this is not done, the data will be inherited
+from the `ggplot()` function for all the `geom_whatever()` functions.
 
 ```r
 library(gridExtra)
@@ -1392,4 +1393,14 @@ class.**
 
 The `RColorBrewer` package provides sets of different colors to use for your
 plots.
+
+## Mapping
+
+Map longitude to the x axis and latitude to the y axis when creating a normal
+plot.
+
+The `ggmap` package allows you to use map data from Google Maps within R. Use 
+the `get_map()` function to retrieve the data for a specified area.
+
+
 
