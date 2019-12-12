@@ -1400,7 +1400,31 @@ Map longitude to the x axis and latitude to the y axis when creating a normal
 plot.
 
 The `ggmap` package allows you to use map data from Google Maps within R. Use 
-the `get_map()` function to retrieve the data for a specified area.
+the `get_map()` function to retrieve the data for a specified area. This 
+function returns a `ggmap` object and can be plotted with the `ggmap()`
+function.
+
+The `geocode()` function within the `ggmap` package allows you to return the
+latitude and longitude of a character string that you pass into the function.
+
+If you mapping needs are restricted to only the USA, check out the
+`choroplethr` and the `choroplethrMaps` packages.
+
+### Spatial Objects
+
+The `tigris` package will let you pull spatial data directly from the US
+Census into R.
+
+Data stored in data frames can be converted into spatial objects with the `sp`
+package. Conversely, if you would like to convert a spatial object into a 
+data frame, you can do so with the `fortify()` function from `ggplot2`.
+
+If you are working iwth ShapeFiles, use the `readOGR()` function from the
+`rgdal` package.
+
+## htmlWidgets
+
+
 
 
 
