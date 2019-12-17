@@ -1424,7 +1424,61 @@ If you are working iwth ShapeFiles, use the `readOGR()` function from the
 
 ## htmlWidgets
 
+Here are some R packages that have interfaces to JavaScript packages for
+plotting:
 
+* `leaflet` - Mapping
+* `dygraphs` - Time-series 
+* `plotly` - Variety of plots 
+* `rbokeh` - Variety of plots 
+* `networkD3` - Network data 
+* `d3heatmap` - heatmaps 
+* `DT` - Data tables 
+* `DiagrammeR` - Diagrams and Flowcharts
 
+### `plotly` Package Overview
 
+Can be used to create 3D scatterplots that can be rotated.
 
+Plots can be created using the `plotly` package or by creating a `ggplot2` 
+plot and the converting it to a `plotly` object using the `ggplotly()`
+function.
+
+You can use R's pipe `%>%` to pipe the output from a `plotly` function into
+another, the same way you would use the `+` for `ggplot2` plots:
+
+```r
+<data> %>%
+  plot_ly(x = ~ <x_var>, y = ~ <y_var>, color = ~ <factor_var>) %>%
+  add_markers()
+```
+
+Additionally, you can pipe the output to `plotly`'s `rangeslider()` function
+which allows the user to zoom in on the x-axis.
+
+You can create surface plots by mapping a data.frame/matrix-like object to the
+`z` variable within a `plot_ly()` call:
+
+```r
+# a matrix that ships with R
+head(volcano)
+
+plot_ly(z = ~ volcano, type = 'surface')
+```
+
+**Check out [this link](https://plot.ly/r/3d-surface-plots/) or [this link](https://plotly-r.com) for how to creates surface plots with `plotly`.**
+
+### `leaflet` Package Overview
+
+Used to create interactive maps.
+
+`leaflet` plots are made by starting with a blank `'leaflet` 'canvas' and
+building on top of it:
+
+```r
+leaflet() %>%
+  addTiles() %>%
+  addCircleMarkers(data = <data>, radius = 2,
+  		   lng = ~ <longitude_var>, lat = ~ <latitude_var>,
+		   popup = ~ paste("<b>Driver age:</b>", age))
+```
