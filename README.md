@@ -1436,7 +1436,7 @@ plotting:
 * `DT` - Data tables 
 * `DiagrammeR` - Diagrams and Flowcharts
 
-### `plotly` Package Overview
+## `plotly` Package Overview
 
 Can be used to create 3D scatterplots that can be rotated.
 
@@ -1468,7 +1468,7 @@ plot_ly(z = ~ volcano, type = 'surface')
 
 **Check out [this link](https://plot.ly/r/3d-surface-plots/) or [this link](https://plotly-r.com) for how to creates surface plots with `plotly`.**
 
-### `leaflet` Package Overview
+## `leaflet` Package Overview
 
 Used to create interactive maps.
 
@@ -1482,3 +1482,26 @@ leaflet() %>%
   		   lng = ~ <longitude_var>, lat = ~ <latitude_var>,
 		   popup = ~ paste("<b>Driver age:</b>", age))
 ```
+
+## `grid` Package Overview
+
+### Grobs
+
+"Graphical objects that you can make and change with grid graphics functions."
+
+Grob objects can (should) be used to create highly unusual plots that aren't
+supported using `ggplot2`'s `geom_()` functions.
+
+Use `grid.draw()` to plot the grob to the current graphics device.
+
+Use the `grid.edit()` function to edit a grob object that is already "drawn"
+on the current graphics device.
+
+Since `ggplot2` is built on top of the `grid` package, you can view the grob
+objects of the `ggplot2` image using the `grid.force()` and then the 
+`grid.ls()` functions. This will print a "tree" of the grob objects that make
+up the `ggplot2` image. You can then use the `grid.edit()` function to edit
+various components of the graph/plot individually.
+
+Use the `tableGrob()` function from the `gridExtra` to plot a markdown-esque
+table within a plot image.
