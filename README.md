@@ -1505,3 +1505,50 @@ various components of the graph/plot individually.
 
 Use the `tableGrob()` function from the `gridExtra` to plot a markdown-esque
 table within a plot image.
+
+## Building a Theme in `ggplot2`
+
+A "theme" in `ggplot2` allows you to modify multiple elements of the a plot
+with minimal code.
+
+One of the main reasons for building a theme is to ensure that your plots have
+a consistent feel to them, regardless of what you are displaying (especially 
+useful froma "branding" perspective).
+
+You can modify the default theme using:
+
+```r
+new_theme <- my_default_theme()
+theme_set(new_theme)
+```
+
+...all subsequent plots will use `new_theme` without the need of specifying 
+it.
+
+Modifying a theme is done using the 
+[`theme()`](https://ggplot2.tidyverse.org/reference/theme.html) function. When
+modifying an element of a theme, you must use of of the following 4 functions:
+
+* `element_text()`
+* `element_line()`
+* `element_rect()`
+* `element_blank()`
+
+Generally speaking, a good "workflow" of building a new theme is to identify
+the element of a theme you would like to change...:
+
+```r
+# blueprint = <theme_variable_name>$<element_name>
+print(new_theme$panel.border)
+```
+
+...this will show the class of the element along with it's various attributes.
+The class will be one of the above four options above (`element_text()`,
+`element_line()`, `element_rect()`, `element_blank()`).
+
+To change attribute X of element Y, which is an instance of class Z, do:
+
+```r
+new_theme <- new_theme +
+		theme(Y = Z(X = "<new_value>"))
+```
