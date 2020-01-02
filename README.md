@@ -1273,7 +1273,8 @@ create. For example:
 
 * color - color of **border** of element.
 * fill - color of **fill** of element.
-* alpha - transparency of element.
+* alpha - transparency of element (takes a value between 0 and 1 - 0 being
+completely transparent and 1 being completely solid).
 
 **All of the above aesthetics can be passed data frame attributes to add more
 information to your plots**.
@@ -1551,4 +1552,130 @@ To change attribute X of element Y, which is an instance of class Z, do:
 ```r
 new_theme <- new_theme +
 		theme(Y = Z(X = "<new_value>"))
+```
+
+## Building new Geoms in `ggplot2`
+
+Building new stats/geoms is the plotting equivalent of writing functions - 
+anytime you are continually writing the same code for a plot, you should think
+about encapsulating it in a geom.
+
+```r
+# replace NAME with a a descriptive name that describes what your're geom
+# does.
+GeomName <- ggproto("GeomName", Geom,
+        required_aes = <a character vector of required aesthetics>,
+        default_aes = aes(<default values for certain aesthetics>),
+        draw_key = <a function used to draw the key in the legend>,
+        draw_panel = function(data, panel_scales, coord) {
+                ## Function that returns a grid grob that will 
+                ## be plotted (this is where the real work occurs)
+        }
+)
+```
+
+In order to successfully implement a new geom, you will have to have a decent 
+working knowledge of the `grid` package (which `ggplot2` is based on), since
+the `draw_panel()` function makes use of `Grob`s. A finished new geom might
+look something like the following:
+
+```r
+library(grid)
+GeomMyPoint <- ggproto("GeomMyPoint", Geom,
+        required_aes = c("x", "y"),
+        default_aes = aes(shape = 1),
+        draw_key = draw_key_point,
+        draw_panel = function(data, panel_scales, coord) {
+                ## Transform the data first
+                coords <- coord$transform(data, panel_scales)
+                
+                ## Let's print out the structure of the 'coords' object
+		# NOTE(mmcquillen): This wouldn't be used in the "final"
+		# product.
+                str(coords)
+                
+                ## Construct a grid grob
+                pointsGrob(
+                        x = coords$x,
+                        y = coords$y,
+                        pch = coords$shape
+                )
+        })
+```
+
+In addition to creating the above `Geom` object, you will have to create the
+funtion that will be used in conjunction with future `ggplot2` objects:
+
+```r
+geom_mypoint <- function(mapping = NULL, data = NULL, stat = "identity",
+                         position = "identity", na.rm = FALSE, 
+                         show.legend = NA, inherit.aes = TRUE, ...) {
+        ggplot2::layer(
+                geom = GeomMyPoint, mapping = mapping,  
+                data = data, stat = stat, position = position, 
+                show.legend = show.legend, inherit.aes = inherit.aes,
+                params = list(na.rm = na.rm, ...)
+        )
+}
+
+# you can now use the function
+ggplot(data = worldcup, aes(Time, Shots)) + geom_mypoint()
+```
+Another exmample of a Geom that automatically sets the alpha level depending
+on the the number of observations that are going to be plotted is:
+
+```r
+GeomAutoTransparent <- ggproto("GeomAutoTransparent", Geom,
+        required_aes = c("x", "y"),
+        default_aes = aes(shape = 19),
+        draw_key = draw_key_point,
+        draw_panel = function(data, panel_scales, coord) {
+                ## Transform the data first
+                coords <- coord$transform(data, panel_scales)
+                
+                ## Compute the alpha transparency factor based on the
+                ## number of data points being plotted
+                n <- nrow(data)
+                if(n > 100 && n <= 200)
+                        coords$alpha <- 0.3
+                else if(n > 200)
+                        coords$alpha <- 0.15
+                else
+                        coords$alpha <- 1
+                ## Construc a grid grob
+                grid::pointsGrob(
+                        x = coords$x,
+                        y = coords$y,
+                        pch = coords$shape,
+                        gp = grid::gpar(alpha = coords$alpha)
+                )
+        })
+
+# now create the function to implement the new Geom...
+geom_transparent <- function(mapping = NULL, data = NULL, stat = "identity",
+                         position = "identity", na.rm = FALSE, 
+                         show.legend = NA, inherit.aes = TRUE, ...) {
+        ggplot2::layer(
+                geom = GeomAutoTransparent, mapping = mapping,  
+                data = data, stat = stat, position = position, 
+                show.legend = show.legend, inherit.aes = inherit.aes,
+                params = list(na.rm = na.rm, ...)
+        )
+}
+
+# and now use it...
+ggplot(data = worldcup, aes(Time, Shots)) + geom_transparent()
+```
+
+## Building new Stats in `ggplot2`
+
+Building a new stat in `ggplot2` is similar to building a new Geom, however
+the purpose of building a new stat is to, "render the data in some way to 
+make is suitable for plotting." The framework for creating a new stat is:
+
+```r
+StatNEW <- ggproto("StatNEW", Stat,
+                   compute_group = <a function that does computations>,
+                   default_aes = aes(<default values for certain aesthetics>),
+                   required_aes = <a character vector of required aesthetics>)
 ```
