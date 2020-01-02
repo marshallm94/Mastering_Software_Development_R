@@ -1,4 +1,5 @@
 library(tidyverse)
+library(lubridate)
 
 source('hurricane_geom.R')
 
@@ -27,7 +28,8 @@ ext_tracks <- read_fwf("data/hurricane_data.txt",
 # tidy data
 
 ext_tracks %>%
-  mutate(date = paste(year, month, day, sep = '-'),
+  mutate(date = ymd(paste(year, month, day, sep = '-')),
 	 storm_id = str_to_title(paste(storm_name, year, sep = '-'))) %>%
   filter(storm_name == 'KATRINA', date == '2005-08-29') %>%
-  select(storm_id, date)
+  select(storm_id, date, year, month, day, hour,
+	 latitude, longitude, radius_34_ne)
