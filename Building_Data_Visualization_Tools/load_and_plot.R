@@ -26,10 +26,17 @@ ext_tracks <- read_fwf("data/hurricane_data.txt",
                        na = "-99")
 
 # tidy data
-
 ext_tracks %>%
-  mutate(date = ymd(paste(year, month, day, sep = '-')),
-	 storm_id = str_to_title(paste(storm_name, year, sep = '-'))) %>%
-  filter(storm_name == 'KATRINA', date == '2005-08-29') %>%
-  select(storm_id, date, year, month, day, hour,
-	 latitude, longitude, radius_34_ne)
+  filter(hour == '12') %>%
+  pivot_longer(radius_34_ne:radius_64_nw,
+	       names_to = 'tmp',
+	       values_to = 'value') %>%
+  separate('tmp', c('tmp','wind_speed','direction')) %>%
+  pivot_wider(names_from = 'direction', values_from = 'value') %>%
+  mutate(date = lubridate::ymd_h(paste(year, month, day, hour, sep = '-')),
+	 storm_id = str_to_title(paste(storm_name, year, sep = '-')),
+	 longitude = -longitude) %>%
+  select(storm_id, date, latitude, longitude, wind_speed,
+	 ne, nw, se, sw) %>%
+  filter(storm_id == 'Katrina-2005', latitude == 29.5) %>%
+  glimpse()
