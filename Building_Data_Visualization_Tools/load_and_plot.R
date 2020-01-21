@@ -1,5 +1,24 @@
 library(tidyverse)
 library(lubridate)
+library(ggplot2)
+library(geosphere)
+library(ggmap)
+
+con <- file("~/.bash_profile")
+results <- readLines(con)
+close(con)
+
+api_key <- str_split(results[grepl("GOOGLE_MAPS_KEY", results)], "=")[[1]][2]
+register_google(key = api_key, write = TRUE)
+
+# $ latitude         <dbl> 29.5, 29.5, 29.5
+# $ longitude        <dbl> -89.6, -89.6, -89.6
+map <- get_map(c(-97.14667, 31.5493))
+str(map)
+ggmap(map)
+map <- get_map(c(lon = -89.6, lat = 29.5),
+		 zoom = 5)
+ggmap(map)
 
 ext_tracks_widths <- c(7, 10, 2, 2, 3, 5, 5, 6, 4, 5, 4, 4, 5, 3, 4, 3, 3, 3,
                        4, 3, 3, 3, 4, 3, 3, 3, 2, 6, 1)
@@ -37,11 +56,11 @@ df <- ext_tracks %>%
 	 longitude = -longitude) %>%
   dplyr::select(-tmp)
 
+
 katrina <- df %>% dplyr::filter(storm_id == "Katrina-2005",
 				month == '08',
 				day == "29")
 
-ike <- df %>% dplyr::filter(stringr::str_detect(storm_id, "Ike"))
 
 ggplot(data = katrina) +
   geom_hurricane(aes(x = longitude, y = latitude,
