@@ -7,21 +7,6 @@ katrina <- df %>% dplyr::filter(storm_id == "Katrina-2005",
 				day == 29) %>%
   select(latitude, longitude, wind_speed, ne, se, sw, nw)
 
-quadrant <- list(seq(0,90), seq(90,180), seq(180,270), seq(270,360))
-center <- katrina %>% select(longitude, latitude) %>% slice(1)
-
-tmp <- list()
-for (i in 1:4) {
-
-  destPoint(p = center,
-	    b = quadrant[[i]],
-	    d = 150 * 1852) %>%
-    as_tibble() %>%
-    rename(longitude = lon, latitude = lat) %>%
-    rbind(center) -> tmp[[i]]
-
-}
-
 map <- get_map(katrina %>%
 	       select(longitude, latitude) %>%
 	       slice(1),
@@ -29,47 +14,43 @@ map <- get_map(katrina %>%
 	       maptype = 'toner-background')
 base_map <- ggmap(map)
 
-colors <- c('red','green','blue','yellow')
-for (i in 1:4) {
+quadrant <- list(seq(0,90), seq(90,180), seq(180,270), seq(270,360))
+center <- katrina %>% select(longitude, latitude) %>% slice(1)
+colors <- c("red", "orange", "yellow")
+wind_speeds <- c(34, 50, 64)
 
-  base_map <- base_map + geom_polygon(data = tmp[[i]],
-				      aes(x = longitude, y = latitude),
-				      fill = colors[i], alpha = 0.5)
+for (j in 1:3) {
 
+  # subsetting on wind_speed
+  direction <- katrina %>%
+    filter(wind_speed == wind_speeds[j]) %>%
+    select(c(ne, se, sw, nw)) %>%
+    as.list()
+
+  # creating data for plotting
+  tmp <- list()
+  for (i in 1:4) {
+
+    destPoint(p = center,
+	      b = quadrant[[i]],
+	      d = direction[[i]] * 1852) %>%
+      as_tibble() %>%
+      rename(longitude = lon, latitude = lat) %>%
+      rbind(center) -> tmp[[i]]
+
+  }
+
+  # add geoms to already created plots
+  color <- colors[j]
+  for (i in 1:4) {
+
+    base_map <- base_map + geom_polygon(data = tmp[[i]],
+					aes(x = longitude, y = latitude),
+					fill = color, alpha = 0.5)
+
+  }
 }
 plot(base_map)
-
-# ne = 1852 * ne,
-# se = 1852 * se,
-# nw = 1852 * nw,
-# sw = 1852 * sw)
-
-
-long <- katrina %>%
-  pivot_longer(c(ne, se, sw, nw),
-	       names_to = "direction",
-	       values_to = 'value') %>%
-  mutate(bearing_start = case_when(direction == 'ne' ~ 1,
-				   direction == 'nw' ~ 90,
-				   direction == 'sw' ~ 180,
-				   direction == 'se' ~ 270),
-	 bearing_stop = case_when(direction == 'ne' ~ 90,
-                                  direction == 'nw' ~ 180,
-                                  direction == 'sw' ~ 270,
-                                  direction == 'se' ~ 360)
-  )
-
-
-
-
-tmp <- tibble(longitude = destPoint(p = long %>% select(longitude, latitude),
-				    b = 1:45,
-				    d = 10000)[,1],
-	      latitude = destPoint(p = long %>% select(longitude, latitude),
-				   b = 1:45,
-                                   d = 10000)[,2]) 
-ggplot(tmp, aes(x = longitude, y = latitude)) +
-  geom_polygon(fill = 'red')
 
 
 # base_map + geom_polygon(data = z, aes(x = lon,

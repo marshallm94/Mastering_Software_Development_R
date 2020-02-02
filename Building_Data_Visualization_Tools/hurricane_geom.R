@@ -3,19 +3,25 @@
 # 		* New stat creates the actual data to be plotted
 # 		  (hidden from user).
 # 		* New geom simply plots the data.
+#
 # 	- create a function that creates a series of latitude and longitude
 # 	  points (the new stat) then pass to geom_polygon() as sniff test
 # 	  (this is roughly how it will work as the finished product).
+#
 # 	- the compute_group() function in the new stat should return a series
 # 	  of latitude/longitude ponits.
 
 # 	- geom_hurricane should work very similarly to geom_polygon.
+#
 # 	- check out geosphere::destPoint which should be used in the new stat
 # 	  to create the points to be plotted (based on the lat, long & rad).
+#
 # 	- Variables from output of new stat will be the required_aes(inputs)
 # 	  of the new geom.
+#
 # 	- When creating df in new stat using geosphere::destPoint, make sure
 # 	  the longitude/latitude points are in the order ne, se, sw, nw.
+#
 # 	- Use GeomPolygon to build geom_hurricane. 
 # 	- set 'geom = polygon' in the stat_hurricane function. 
 # 	- geom_hurricane should inherit most of the properties of geom_polygon.
