@@ -4,8 +4,7 @@ df <- load_data()
 
 katrina <- df %>% dplyr::filter(storm_id == "Katrina-2005",
 				month == 8,
-				day == 29) %>%
-  select(latitude, longitude, wind_speed, ne, se, sw, nw)
+				day == 29)
 
 map <- get_map(katrina %>%
 	       select(longitude, latitude) %>%
@@ -19,6 +18,7 @@ center <- katrina %>% select(longitude, latitude) %>% slice(1)
 colors <- c("red", "orange", "yellow")
 wind_speeds <- c(34, 50, 64)
 
+frames <- tibble()
 for (j in 1:3) {
 
   # subsetting on wind_speed
@@ -28,29 +28,48 @@ for (j in 1:3) {
     as.list()
 
   # creating data for plotting
-  tmp <- list()
   for (i in 1:4) {
 
-    destPoint(p = center,
-	      b = quadrant[[i]],
-	      d = direction[[i]] * 1852) %>%
+    new_data <- destPoint(p = center,
+			  b = quadrant[[i]],
+			  d = direction[[i]] * 1852) %>%
       as_tibble() %>%
       rename(longitude = lon, latitude = lat) %>%
-      rbind(center) -> tmp[[i]]
+      mutate(wind_speed = factor(wind_speeds[j]))
 
-  }
-
-  # add geoms to already created plots
-  color <- colors[j]
-  for (i in 1:4) {
-
-    base_map <- base_map + geom_polygon(data = tmp[[i]],
-					aes(x = longitude, y = latitude),
-					fill = color, alpha = 0.5)
-
+    frames <- rbind(frames, new_data)
   }
 }
-plot(base_map)
+
+display_plot <- ggplot() 
+
+display_plot + geom_polygon(data = frames, aes(x = longitude,
+					   y = latitude,
+					   color = wind_speed,
+					   fill = wind_speed,
+					   group = wind_speed), alpha = 0.75) +
+  scale_color_manual(name = "Wind speed (kts)",
+		     values = c("red", "orange", "yellow")) +
+  scale_fill_manual(name = "Wind speed (kts)",
+                    values = c("red", "orange", "yellow"))
+
+
+display_plot <- display_plot + geom_polygon(data = frames,
+					    aes(x = longitude, y = latitude),
+					    color = factor(wind_speed),
+					    fill = factor(wind_speed),
+					    group = wind_speed) +
+  scale_color_manual(name = "Wind speed (kts)",
+		     values = c("red", "orange", "yellow")) +
+  scale_fill_manual(name = "Wind speed (kts)",
+                    values = c("red", "orange", "yellow"))
+#   display_plot <- display_plot + geom_polygon(data = frames,
+# 					      aes(x = longitude, y = latitude),
+# 					      color = colors[j],
+# 					      fill = colors[j],
+# 					      alpha = 0.75)
+
+plot(display_plot)
 
 
 # base_map + geom_polygon(data = z, aes(x = lon,

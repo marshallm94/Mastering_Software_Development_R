@@ -1,23 +1,3 @@
-# 	- create a function that creates a series of latitude and longitude
-# 	  points (the new stat) then pass to geom_polygon() as sniff test
-# 	  (this is roughly how it will work as the finished product).
-#
-# 	- the compute_group() function in the new stat should return a series
-# 	  of latitude/longitude ponits.
-#
-# 	- Variables from output of new stat will be the required_aes(inputs)
-# 	  of the new geom.
-#
-# 	- Use GeomPolygon to build geom_hurricane. 
-#
-# 	- set 'geom = polygon' in the stat_hurricane function. 
-#
-# 	- geom_hurricane should inherit most of the properties of geom_polygon.
-# 	  (check "Extending ggplot2" vignette - "inheriting from an existing
-# 	  Geom") 	
-
-
-
 library(ggplot2)
 library(geosphere)
 
@@ -61,8 +41,7 @@ compute_group_func <- function(data, scales) {
 StatHurricane <- ggproto("StatHurricane",
 			 Stat,
 			 compute_group = compute_group_func,
-			 required_aes = c('x','y','r_ne','r_se','r_nw',
-					  'r_sw'),
+			 required_aes = c('x','y','r_ne','r_se','r_nw','r_sw'),
 			 optional_aes = c('fill','color')
 )
 
@@ -85,29 +64,22 @@ ggplot(data = katrina) +
   geom_polygon(stat = 'hurricane', aes(x = longitude, y = latitude,
 		     r_ne = ne, r_se = se, r_sw = sw, r_nw = nw,
 		     fill = wind_speed,
-		     color = wind_speed),
-		     alpha = 0.75) +
+		     color = wind_speed)) +
   scale_color_manual(name = "Wind speed (kts)",
 		     values = c("red", "orange", "yellow")) +
   scale_fill_manual(name = "Wind speed (kts)",
                     values = c("red", "orange", "yellow"))
 
 
-
-
-draw_panel_func <- function(data, panel_scales, coord) {
-
-
-}
-
 GeomHurricane <- ggproto("GeomHurricane",
 			 GeomPolygon,
-			 required_aes = c('x','y','fill'),
-			 default_aes = aes(alpha = 0.7),
+			 default_aes = aes(alpha = 0.65, lwd = 1),
+			 optional_aes = c('fill'),
+			 required_aes = c('x','y','r_ne','r_se','r_nw','r_sw'),
 			 draw_key = draw_key_polygon
 )
 
-geom_hurricane <- function(mapping = NULL, data = NULL, stat = "hurricane",
+geom_hurricane <- function(mapping = NULL, data = NULL, stat = 'hurricane',
                          position = "identity", na.rm = FALSE, 
                          show.legend = NA, inherit.aes = TRUE, ...) {
 
@@ -123,24 +95,13 @@ geom_hurricane <- function(mapping = NULL, data = NULL, stat = "hurricane",
         )
 }
 
-ggplot(data = katrina) +
-  geom_hurricane(aes(x = longitude, y = latitude,
-		     r_ne = ne, r_se = se, r_sw = sw, r_nw = nw,
-		     fill = wind_speed, color = wind_speed)) +
+base_map +
+  geom_hurricane(data = katrina, aes(x = longitude, y = latitude,
+				     r_ne = ne, r_se = se,
+				     r_nw = nw, r_sw = sw,
+				     fill = wind_speed,
+				     color = wind_speed)) +
   scale_color_manual(name = "Wind speed (kts)",
-		     values = c("red", "orange", "yellow")) +
+                     values = c("red", "orange", "yellow")) +
   scale_fill_manual(name = "Wind speed (kts)",
                     values = c("red", "orange", "yellow"))
-
-ggplot(data = katrina, aes(x = longitude, y = latitude)) +
-  stat_hurricane(aes(x = longitude, y = latitude,
-		     r_ne = ne, r_se = se, r_sw = sw, r_nw = nw,
-		     fill = wind_speed, color = wind_speed), alpha = 0.75) +
-			 geom_polygon()
-  scale_color_manual(name = "Wind speed (kts)",
-		     values = c("red", "orange", "yellow")) +
-  scale_fill_manual(name = "Wind speed (kts)",
-                    values = c("red", "orange", "yellow"))
-
-
-
