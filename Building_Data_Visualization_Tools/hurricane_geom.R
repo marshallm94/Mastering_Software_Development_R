@@ -47,42 +47,15 @@ compute_group_func <- function(data, scales) {
 StatHurricane <- ggproto("StatHurricane",
 			 Stat,
 			 compute_group = compute_group_func,
-			 required_aes = c('x','y','r_ne','r_se','r_nw','r_sw'),
-			 optional_aes = c('fill','colour')
+			 required_aes = c('x','y','r_ne','r_se','r_nw','r_sw',
+					  'fill','colour')
 )
 
-stat_hurricane <- function(mapping = NULL, data = NULL, geom = "polygon",
-                           position = "identity", na.rm = FALSE, 
-                           show.legend = TRUE, inherit.aes = TRUE, ...) {
-        ggplot2::layer(
-                stat = StatHurricane, 
-                data = data, 
-                mapping = mapping, 
-                geom = geom, 
-                position = position, 
-                show.legend = show.legend, 
-                inherit.aes = inherit.aes,
-                params = list(na.rm = na.rm, ...)
-        )
-}
-
-# ggplot(data = katrina) +
-#   geom_polygon(stat = 'hurricane', aes(x = longitude, y = latitude,
-# 		     r_ne = ne, r_se = se, r_sw = sw, r_nw = nw,
-# 		     fill = wind_speed,
-# 		     color = wind_speed), alpha = 0.7) +
-#   scale_color_manual(name = "Wind speed (kts)",
-# 		     values = c("red", "orange", "yellow")) +
-#   scale_fill_manual(name = "Wind speed (kts)",
-#                     values = c("red", "orange", "yellow"))
-
-
 GeomHurricane <- ggproto("GeomHurricane",
-			 GeomPolygon
-			 #draw_key = draw_key_polygon,
-			 #default_aes = aes(alpha = 0.65, lwd = 1),
-			 #optional_aes = c('fill','colour'),
-			 #required_aes = c('x','y','r_ne','r_se','r_nw','r_sw')
+			 GeomPolygon,
+			 default_aes = aes(alpha = 0.65, lwd = 0.75),
+			 required_aes = c('x','y','r_ne','r_se','r_nw','r_sw',
+					  'fill','colour')
 )
 
 geom_hurricane <- function(mapping = NULL, data = NULL,
