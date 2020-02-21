@@ -1,15 +1,17 @@
 library(ggplot2)
 library(geosphere)
+library(gridExtra)
 
 # testing area
 source('load_data.R')
 
 df <- load_data()
 
+ike <- df %>% dplyr::filter(storm_id == 'Ike-2008', day == 13)
 katrina <- df %>% dplyr::filter(storm_id == "Katrina-2005",
 				month == 8,
 				day == 29)
-map <- get_map(katrina %>%
+map <- get_map(ike %>%
 	       select(longitude, latitude) %>%
 	       slice(1),
 	       zoom = 6,
@@ -76,8 +78,20 @@ geom_hurricane <- function(mapping = NULL, data = NULL, scale_radii = 1,
         )
 }
 
-base_map +
-  geom_hurricane(data = katrina, aes(x = longitude, y = latitude,
+plot_radii_1 <- base_map +
+  geom_hurricane(data = ike , aes(x = longitude, y = latitude,
+				     r_ne = ne, r_se = se,
+				     r_nw = nw, r_sw = sw,
+				     fill = wind_speed,
+				     color = wind_speed)) +
+  scale_color_manual(name = "Wind speed (kts)",
+                     values = c("red", "orange", "yellow")) +
+  scale_fill_manual(name = "Wind speed (kts)",
+                    values = c("red", "orange", "yellow")) +
+  ggtitle("Scale Radii = 1")
+
+plot_radii_0.5 <- base_map +
+  geom_hurricane(data = ike , aes(x = longitude, y = latitude,
 				     r_ne = ne, r_se = se,
 				     r_nw = nw, r_sw = sw,
 				     fill = wind_speed,
@@ -86,15 +100,14 @@ base_map +
   scale_color_manual(name = "Wind speed (kts)",
                      values = c("red", "orange", "yellow")) +
   scale_fill_manual(name = "Wind speed (kts)",
-                    values = c("red", "orange", "yellow"))
+                    values = c("red", "orange", "yellow")) +
+  ggtitle("Scale Radii = 0.5")
 
-ggplot(data = katrina, aes(x = longitude, y = latitude,
-			   r_ne = ne, r_se = se,
-			   r_nw = nw, r_sw = sw,
-			   fill = wind_speed,
-			   color = wind_speed)) +
-  geom_hurricane() +
-  scale_color_manual(name = "Wind speed (kts)",
-                     values = c("red", "orange", "yellow")) +
-  scale_fill_manual(name = "Wind speed (kts)",
-                    values = c("red", "orange", "yellow"))
+both_plots <- grid.arrange(plot_radii_1,
+			   plot_radii_0.5,
+			   ncol = 2,
+			   top = 'Hurricane Ike | September 13, 2008')
+
+png('Ike_Plot.png', height = 5, width = 8, units = 'in', res = 300)
+plot(both_plots)
+dev.off()
