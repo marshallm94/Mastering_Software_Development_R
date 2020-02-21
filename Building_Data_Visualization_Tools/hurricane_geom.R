@@ -9,6 +9,12 @@ df <- load_data()
 katrina <- df %>% dplyr::filter(storm_id == "Katrina-2005",
 				month == 8,
 				day == 29)
+map <- get_map(katrina %>%
+	       select(longitude, latitude) %>%
+	       slice(1),
+	       zoom = 6,
+	       maptype = 'toner-background')
+base_map <- ggmap(map)
 
 compute_group_func <- function(data, scales) {
 
@@ -42,12 +48,12 @@ StatHurricane <- ggproto("StatHurricane",
 			 Stat,
 			 compute_group = compute_group_func,
 			 required_aes = c('x','y','r_ne','r_se','r_nw','r_sw'),
-			 optional_aes = c('fill','color')
+			 optional_aes = c('fill','colour')
 )
 
 stat_hurricane <- function(mapping = NULL, data = NULL, geom = "polygon",
                            position = "identity", na.rm = FALSE, 
-                           show.legend = NA, inherit.aes = TRUE, ...) {
+                           show.legend = TRUE, inherit.aes = TRUE, ...) {
         ggplot2::layer(
                 stat = StatHurricane, 
                 data = data, 
@@ -60,34 +66,34 @@ stat_hurricane <- function(mapping = NULL, data = NULL, geom = "polygon",
         )
 }
 
-ggplot(data = katrina) +
-  geom_polygon(stat = 'hurricane', aes(x = longitude, y = latitude,
-		     r_ne = ne, r_se = se, r_sw = sw, r_nw = nw,
-		     fill = wind_speed,
-		     color = wind_speed)) +
-  scale_color_manual(name = "Wind speed (kts)",
-		     values = c("red", "orange", "yellow")) +
-  scale_fill_manual(name = "Wind speed (kts)",
-                    values = c("red", "orange", "yellow"))
+# ggplot(data = katrina) +
+#   geom_polygon(stat = 'hurricane', aes(x = longitude, y = latitude,
+# 		     r_ne = ne, r_se = se, r_sw = sw, r_nw = nw,
+# 		     fill = wind_speed,
+# 		     color = wind_speed), alpha = 0.7) +
+#   scale_color_manual(name = "Wind speed (kts)",
+# 		     values = c("red", "orange", "yellow")) +
+#   scale_fill_manual(name = "Wind speed (kts)",
+#                     values = c("red", "orange", "yellow"))
 
 
 GeomHurricane <- ggproto("GeomHurricane",
-			 GeomPolygon,
-			 default_aes = aes(alpha = 0.65, lwd = 1),
-			 optional_aes = c('fill'),
-			 required_aes = c('x','y','r_ne','r_se','r_nw','r_sw'),
-			 draw_key = draw_key_polygon
+			 GeomPolygon
+			 #draw_key = draw_key_polygon,
+			 #default_aes = aes(alpha = 0.65, lwd = 1),
+			 #optional_aes = c('fill','colour'),
+			 #required_aes = c('x','y','r_ne','r_se','r_nw','r_sw')
 )
 
-geom_hurricane <- function(mapping = NULL, data = NULL, stat = 'hurricane',
-                         position = "identity", na.rm = FALSE, 
-                         show.legend = NA, inherit.aes = TRUE, ...) {
+geom_hurricane <- function(mapping = NULL, data = NULL,
+			   position = "identity", na.rm = FALSE, 
+			   show.legend = NA, inherit.aes = TRUE, ...) {
 
         ggplot2::layer(
                 geom = GeomHurricane,
 		mapping = mapping,  
                 data = data,
-		stat = stat,
+		stat = StatHurricane,
 		position = position, 
                 show.legend = show.legend,
 		inherit.aes = inherit.aes,
@@ -101,6 +107,17 @@ base_map +
 				     r_nw = nw, r_sw = sw,
 				     fill = wind_speed,
 				     color = wind_speed)) +
+  scale_color_manual(name = "Wind speed (kts)",
+                     values = c("red", "orange", "yellow")) +
+  scale_fill_manual(name = "Wind speed (kts)",
+                    values = c("red", "orange", "yellow"))
+
+ggplot(data = katrina, aes(x = longitude, y = latitude,
+			   r_ne = ne, r_se = se,
+			   r_nw = nw, r_sw = sw,
+			   fill = wind_speed,
+			   color = wind_speed)) +
+  geom_hurricane() +
   scale_color_manual(name = "Wind speed (kts)",
                      values = c("red", "orange", "yellow")) +
   scale_fill_manual(name = "Wind speed (kts)",
