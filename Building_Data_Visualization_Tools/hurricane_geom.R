@@ -16,7 +16,7 @@ map <- get_map(katrina %>%
 	       maptype = 'toner-background')
 base_map <- ggmap(map)
 
-compute_group_func <- function(data, scales) {
+compute_group_func <- function(data, scales, scale_radii) {
 
   quadrant <- list(seq(0,90), seq(90,180), seq(180,270), seq(270,360))
 
@@ -34,7 +34,7 @@ compute_group_func <- function(data, scales) {
 
     new_data <- destPoint(p = center,
 			  b = quadrant[[i]],
-			  d = direction[[i]] * 1852) %>%
+			  d = direction[[i]] * 1852 * scale_radii) %>%
       as_tibble() %>%
       rename(x = lon, y = lat)
 
@@ -48,17 +48,19 @@ StatHurricane <- ggproto("StatHurricane",
 			 Stat,
 			 compute_group = compute_group_func,
 			 required_aes = c('x','y','r_ne','r_se','r_nw','r_sw',
-					  'fill','colour')
+					  'fill','colour'),
+			 optional_aes = c('scale_radii')
 )
 
 GeomHurricane <- ggproto("GeomHurricane",
 			 GeomPolygon,
 			 default_aes = aes(alpha = 0.65, lwd = 0.75),
 			 required_aes = c('x','y','r_ne','r_se','r_nw','r_sw',
-					  'fill','colour')
+					  'fill','colour'),
+			 optional_aes = c('scale_radii')
 )
 
-geom_hurricane <- function(mapping = NULL, data = NULL,
+geom_hurricane <- function(mapping = NULL, data = NULL, scale_radii = 1,
 			   position = "identity", na.rm = FALSE, 
 			   show.legend = NA, inherit.aes = TRUE, ...) {
 
@@ -70,7 +72,7 @@ geom_hurricane <- function(mapping = NULL, data = NULL,
 		position = position, 
                 show.legend = show.legend,
 		inherit.aes = inherit.aes,
-                params = list(na.rm = na.rm, ...)
+                params = list(na.rm = na.rm, scale_radii = scale_radii, ...)
         )
 }
 
@@ -79,7 +81,8 @@ base_map +
 				     r_ne = ne, r_se = se,
 				     r_nw = nw, r_sw = sw,
 				     fill = wind_speed,
-				     color = wind_speed)) +
+				     color = wind_speed),
+		 scale_radii = 0.5) +
   scale_color_manual(name = "Wind speed (kts)",
                      values = c("red", "orange", "yellow")) +
   scale_fill_manual(name = "Wind speed (kts)",
