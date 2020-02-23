@@ -5,6 +5,15 @@ library(geosphere)
 library(ggmap)
 library(grid)
 
+register API key - only needs to be run once
+con <- file("~/.bash_profile")
+results <- readLines(con)
+close(con)
+
+api_key <- str_split(results[grepl("GOOGLE_MAPS_KEY", results)], "=")[[1]][2]
+register_google(key = api_key, write = TRUE)
+
+
 #' Read in data.
 #'
 #' Reads the hurricane data into a data frame. The filepath to the data should
