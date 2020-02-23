@@ -5,14 +5,20 @@ library(geosphere)
 library(ggmap)
 library(grid)
 
-# register API key - only needs to be run once
-# con <- file("~/.bash_profile")
-# results <- readLines(con)
-# close(con)
-# 
-# api_key <- str_split(results[grepl("GOOGLE_MAPS_KEY", results)], "=")[[1]][2]
-# register_google(key = api_key, write = TRUE)
-
+#' Read in data.
+#'
+#' Reads the hurricane data into a data frame. The filepath to the data should
+#' be 'data/hurricane_data.txt'.
+#'
+#' @return The Extended Best Track dataset in a tibble.
+#' 
+#' @import readr
+#' @import dplyr
+#' 
+#' @examples
+#' df <- load_data()
+#'
+#' @export
 load_data <- function() {
 
   ext_tracks_widths <- c(7, 10, 2, 2, 3, 5, 5, 6, 4, 5, 4, 4, 5, 3, 4, 3, 3, 3,
@@ -58,19 +64,18 @@ load_data <- function() {
     return(df)
 }
 
-df <- load_data()
-
-ike <- df %>% dplyr::filter(storm_id == 'Ike-2008', day == 13)
-katrina <- df %>% dplyr::filter(storm_id == "Katrina-2005",
-				month == 8,
-				day == 29)
-map <- ggmap::get_map(ike %>%
-			dplyr::select(longitude, latitude) %>%
-			dplyr::slice(1),
-		      zoom = 6,
-		      maptype = 'toner-background')
-base_map <- ggmap::ggmap(map)
-
+#' Creates a data frame of latitude and longitude points to plot the radius of
+#' a given wind radii.
+#'
+#' @param data The data for a given wind speed of a hurricane instance.
+#' @param scales 
+#' @param scale_radii The amount the radius should be scaled for the plot. 
+#'
+#' @return A data frame
+#' 
+#' @import geosphere
+#' @import tibble
+#' @import dplyr
 compute_group_func <- function(data, scales, scale_radii) {
 
   quadrant <- list(seq(0,90), seq(90,180), seq(180,270), seq(270,360))
@@ -99,6 +104,9 @@ compute_group_func <- function(data, scales, scale_radii) {
   frames
 }
 
+#' The Stat backend for GeomHurricane
+#' 
+#' @import ggplo2
 StatHurricane <- ggplot2::ggproto("StatHurricane",
 				  Stat,
 				  compute_group = compute_group_func,
@@ -107,6 +115,9 @@ StatHurricane <- ggplot2::ggproto("StatHurricane",
 				  optional_aes = c('scale_radii')
 )
 
+#' The Geom backend for geom_hurricane.
+#' 
+#' @import ggplo2
 GeomHurricane <- ggplot2::ggproto("GeomHurricane",
 				  GeomPolygon,
 				  default_aes = ggplot2::aes(alpha = 0.65, lwd = 0.75),
@@ -115,6 +126,40 @@ GeomHurricane <- ggplot2::ggproto("GeomHurricane",
 				  optional_aes = c('scale_radii')
 )
 
+#' Plots a hurricane instance.
+#'
+#' Create a circular shape that displays how far various wind speeds reached in
+#' each of the NE, SE, SW and NW directions.
+#'
+#' @param x The longitude of the hurricane.
+#' @param y The latitude of the hurricane
+#' @param r_ne The miles that a given wind speed was recored to have reached in the NE direction.
+#' @param r_se The miles that a given wind speed was recored to have reached in the SE direction.
+#' @param r_nw The miles that a given wind speed was recored to have reached in the NW direction.
+#' @param r_sw The miles that a given wind speed was recored to have reached in the SW direction.
+#' @param scale_radii The number to scale the 4 radii by.
+#' @param fill The speed of the wind.
+#' @param color The speed of the wind.
+#'
+#' @return A ggplot2 plot.
+#' 
+#' @import ggplot2
+#' 
+#' @examples
+#' df <- load_data()
+#' katrina <- df %>% dplyr::filter(storm_id == "Katrina-2005",
+#'				   month == 8,
+#'				   day == 29)
+#' geom_hurricane(data = katrina, ggplot2::aes(x = longitude, y = latitude,
+#'					       r_ne = ne, r_se = se, r_nw = nw, r_sw = sw,
+#'					       fill = wind_speed,
+#'					       color = wind_speed)) +
+#' ggplot2::scale_color_manual(name = "Wind speed (kts)",
+#'			       values = c("red", "orange", "yellow")) +
+#' ggplot2::scale_fill_manual(name = "Wind speed (kts)",
+#'			      values = c("red", "orange", "yellow")) +
+#'
+#' @export
 geom_hurricane <- function(mapping = NULL, data = NULL, scale_radii = 1,
 			   position = "identity", na.rm = FALSE, 
 			   show.legend = NA, inherit.aes = TRUE, ...) {
@@ -130,6 +175,18 @@ geom_hurricane <- function(mapping = NULL, data = NULL, scale_radii = 1,
                 params = list(na.rm = na.rm, scale_radii = scale_radii, ...)
         )
 }
+
+
+# code to produce plot
+df <- load_data()
+
+ike <- df %>% dplyr::filter(storm_id == 'Ike-2008', day == 13)
+map <- ggmap::get_map(ike %>%
+			dplyr::select(longitude, latitude) %>%
+			dplyr::slice(1),
+		      zoom = 6,
+		      maptype = 'toner-background')
+base_map <- ggmap::ggmap(map)
 
 plot_radii_1 <- base_map +
   geom_hurricane(data = ike , ggplot2::aes(x = longitude, y = latitude,
