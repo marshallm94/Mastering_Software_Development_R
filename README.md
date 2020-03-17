@@ -1184,6 +1184,8 @@ function) will allow `roxygen2` to create the NAMESPACE file for you.
 
 ## Data Within a Package
 
+Raw data should be in a subdirectory of the package called `inst/extdata`.
+
 Since most packages group functions together that manipulate similar data, it
 is usually a good idea to include some data to demonstrate how functions are used.
 
