@@ -1005,6 +1005,8 @@ jason_bourne$add_credits(100)
 
 # Course: Building R Packages
 
+The final project for this course can be found [here]( https://github.com/marshallm94/assignmentr )
+
 A **comprehensive** guide to the details of building an R package can be found
 [here](https://cran.r-project.org/doc/manuals/r-release/R-exts.html).
 
