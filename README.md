@@ -1683,3 +1683,8 @@ StatNEW <- ggproto("StatNEW", Stat,
                    default_aes = aes(<default values for certain aesthetics>),
                    required_aes = <a character vector of required aesthetics>)
 ```
+
+# Course: Mastering Software Development in R Capstone
+
+This is a stand-alone repo at [this link](https://github.com/marshallm94/NOAAEarthquakeR).
+
